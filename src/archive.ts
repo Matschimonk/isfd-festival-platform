@@ -8,6 +8,7 @@ import {
 } from "./content";
 
 import { socialHighlights } from "./experience-content";
+import { journal } from "./journal-content";
 
 const experience = "https://www.italyshortfilmdays.com/en/experience";
 const lineup = "https://www.italyshortfilmdays.com/en/line";
@@ -161,6 +162,7 @@ const screenings: Screening[] = [
 }));
 
 const festival: Festival = {
+  journal,
   editions: [
     {
       id: "2027",

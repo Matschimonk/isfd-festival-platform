@@ -26,6 +26,12 @@ import {
   Trailer,
 } from "./DirectorPreview";
 import { Brand, Header } from "./Navigation";
+import {
+  JournalArticle,
+  JournalLanding,
+  JournalTeaser,
+} from "./EditorialJournal";
+import { FilmDiscovery } from "./FilmDiscovery";
 import { ProgrammeTimetable, SaveEvent } from "./ProgrammeTimetable";
 import {
   ArchiveFeature,
@@ -386,9 +392,11 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
         </div>
       </section>
       <div className="shell page-body">
+        <FilmDiscovery data={data} locale={locale} />
         <Trailer locale={locale} />
         <ApprovedExcerpts data={data} locale={locale} />
         <HomeFeatures data={data} locale={locale} />
+        <JournalTeaser data={data} locale={locale} />
         <section aria-labelledby="home-media">
           <h2 id="home-media">{t(pages.media)}</h2>
           <Media data={data} locale={locale} t={t} featured />
@@ -407,7 +415,7 @@ export function App({
   locale: Locale;
 }) {
   const t: T = (text) => translate(text, locale);
-  const { page, id, film, event, venue, article, missing } = resolvePage(
+  const { page, id, film, event, venue, article, story, missing } = resolvePage(
     data,
     route,
   );
@@ -431,6 +439,8 @@ export function App({
         </a>
       </p>
     );
+  else if (story)
+    body = <JournalArticle data={data} locale={locale} story={story} />;
   else if (article)
     body = (
       <article>
@@ -476,6 +486,7 @@ export function App({
                 <ArrowUpRight size={17} aria-hidden="true" />
               </a>
             </p>
+            <FilmDiscovery data={data} locale={locale} />
             <GenreExplorer data={data} locale={locale} />
             <section>
               <h2>{t(ui.lineup)}</h2>
@@ -486,6 +497,9 @@ export function App({
             </section>
           </>
         );
+        break;
+      case "journal":
+        body = <JournalLanding data={data} locale={locale} />;
         break;
       case "academy":
         body = (
@@ -661,7 +675,7 @@ export function App({
               <h2>{t(experience.archiveKinds.press)}</h2>
               <Media data={data} locale={locale} t={t} />
             </section>
-            <section>
+            <section id="archive-films">
               <h2>{t(ui.lineup)}</h2>
               <FilmList
                 films={data.films.filter((f) => f.edition === 2026)}
@@ -690,7 +704,11 @@ export function App({
               </a>
             )}
             <PreviewMark locale={locale} />
-            <h1>{title}</h1>
+            {!story && (
+              <h1 className={page === "journal" ? "journal-title" : undefined}>
+                {title}
+              </h1>
+            )}
             {body}
           </div>
         )}

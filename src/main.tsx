@@ -6,11 +6,12 @@ import { repository } from "./archive";
 import { defaultLocale, isLocale } from "./content";
 import { ui } from "./copy";
 import { legacyRoute, link, pathRoute, resolvePage } from "./routes";
-import { indexPolicy, pageMetadata } from "./seo";
+import { pageMetadata } from "./seo";
 import "./style.css";
 import "./experience-v2.css";
 import "./director-preview.css";
 import "./programme-timetable.css";
+import "./editorial-cinema.css";
 
 function savedLocale() {
   try {
@@ -65,10 +66,11 @@ async function start() {
     hydrateRoot(root, element);
   } else {
     document.documentElement.lang = locale;
-    document.title = pageMetadata(data, route, locale).title;
+    const metadata = pageMetadata(data, route, locale);
+    document.title = metadata.title;
     document
       .querySelector('meta[name="robots"]')
-      ?.setAttribute("content", missing ? "noindex" : indexPolicy);
+      ?.setAttribute("content", metadata.robots);
     createRoot(root).render(element);
   }
 }

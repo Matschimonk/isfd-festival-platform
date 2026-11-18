@@ -36,6 +36,9 @@ export interface EditorialImage {
   alt: LocalizedContent;
   credit: string;
   rights: "approved" | "pending";
+  width?: number;
+  height?: number;
+  variants?: { src: string; width: number }[];
 }
 export interface EditorialPreview {
   src: string;
@@ -58,11 +61,20 @@ export interface Venue extends RecordBase {
   accessibility?: LocalizedContent;
 }
 export type FilmGenre =
-  "experimental" | "classic" | "innovative" | "comedy" | "documentary";
+  | "experimental"
+  | "classic"
+  | "innovative"
+  | "comedy"
+  | "documentary";
 export interface Film extends RecordBase {
   verifiedGenres?: FilmGenre[];
   discoveryPoster?: EditorialImage;
   discoveryPreview?: EditorialPreview;
+  approvedTrailer?: {
+    url: string;
+    credit: string;
+    rights: "approved" | "pending";
+  };
   title: string;
   directors?: string[];
   edition: number;
@@ -135,6 +147,31 @@ export interface NewsArticle extends RecordBase {
   url: string;
   kind: "press" | "interview" | "video" | "news" | "editorial";
 }
+export type JournalCategory =
+  | "interviews"
+  | "festival"
+  | "backstage"
+  | "perspectives";
+export interface JournalStory extends RecordBase {
+  category: JournalCategory;
+  featured?: boolean;
+  demo?: boolean;
+  title: LocalizedContent;
+  subtitle: LocalizedContent;
+  author: LocalizedContent;
+  date: string;
+  hero?: EditorialImage;
+  body: LocalizedContent[];
+  pullQuote?: LocalizedContent;
+  filmId?: string;
+  eventId?: string;
+  reading?: {
+    page: "archive" | "media";
+    id?: string;
+    anchor?: string;
+    label: LocalizedContent;
+  };
+}
 export interface Award extends RecordBase {
   edition: number;
   title: LocalizedContent;
@@ -176,6 +213,7 @@ export interface Festival {
   venues: Venue[];
   awards: Award[];
   articles: NewsArticle[];
+  journal?: JournalStory[];
   people: Person[];
   partners: Partner[];
   tickets: TicketOffer[];
