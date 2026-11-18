@@ -16,7 +16,6 @@ import {
   days,
   l,
   visible,
-  type ArchiveMedia,
   type Festival,
   type Film,
   type FilmGenre,
@@ -31,6 +30,15 @@ import {
   socialHighlights,
 } from "./experience-content";
 import { pages, ui } from "./copy";
+import { media, relatedMedia } from "./media-library";
+import {
+  MediaCredit,
+  MediaGallery,
+  MediaImage,
+  MediaPlayer,
+  mediaCopy,
+} from "./Media";
+import type { ArchiveKind } from "./media-types";
 import { link } from "./routes";
 
 type Props = { data: Festival; locale: Locale };
@@ -100,19 +108,15 @@ export function FilmCard({ film, locale }: { film: Film; locale: Locale }) {
   const id = useId();
   const [playing, setPlaying] = useState(false);
   const poster =
-    film.discoveryPoster?.rights === "approved"
-      ? film.discoveryPoster
-      : undefined;
-  const preview =
-    film.discoveryPreview?.rights === "approved"
-      ? film.discoveryPreview
-      : undefined;
+    relatedMedia("poster", "films", film.id)[0] ??
+    relatedMedia("still", "films", film.id)[0];
+  const preview = relatedMedia("preview", "films", film.id)[0];
   return (
     <article className="film-tile" data-frame={film.id.length % 4}>
       <a className="film-card-link" href={link(locale, "films", film.id)}>
         <div className="film-visual">
           {poster ? (
-            <img src={poster.src} alt={poster.alt[locale]} loading="lazy" />
+            <MediaImage asset={poster} locale={locale} />
           ) : (
             <span className="film-geometry" aria-hidden="true">
               <Clapperboard size={20} />
@@ -126,9 +130,9 @@ export function FilmCard({ film, locale }: { film: Film; locale: Locale }) {
           {film.directors?.length ? (
             <small>{film.directors.join(", ")}</small>
           ) : null}
-          {poster && <small>{poster.credit}</small>}
         </span>
       </a>
+      {poster && <MediaCredit asset={poster} locale={locale} />}
       {preview && (
         <div className="film-preview">
           <button
@@ -144,23 +148,8 @@ export function FilmCard({ film, locale }: { film: Film; locale: Locale }) {
           <div id={id} hidden={!playing}>
             {playing && (
               <>
-                <video
-                  src={preview.src}
-                  controls
-                  playsInline
-                  preload="none"
-                  aria-label={preview.title[locale]}
-                >
-                  {preview.captions && (
-                    <track
-                      kind="captions"
-                      src={preview.captions.src}
-                      srcLang={preview.captions.locale}
-                      label={preview.captions.label}
-                    />
-                  )}
-                </video>
-                <small>{preview.credit}</small>
+                <MediaPlayer asset={preview} locale={locale} />
+                <MediaCredit asset={preview} locale={locale} />
               </>
             )}
           </div>
@@ -296,6 +285,10 @@ function Episode({
 }
 
 export function TalksAndSchools({ data, locale }: Props) {
+  const recordings = media.filter(
+    (asset) => asset.role === "podcast" && asset.edition === 2027,
+  );
+  const interviews = media.filter((asset) => asset.role === "interview");
   const episodes = data.podcasts.filter(
     (episode) => visible(episode) && episode.edition === 2027,
   );
@@ -322,10 +315,19 @@ export function TalksAndSchools({ data, locale }: Props) {
                 ))}
               </ul>
             ) : (
-              <p>{x.podcastPending[locale]}</p>
+              recordings.length === 0 && <p>{x.podcastPending[locale]}</p>
             )}
           </div>
         </div>
+        {recordings.length > 0 && (
+          <MediaGallery assets={recordings} locale={locale} data={data} />
+        )}
+        {interviews.length > 0 && (
+          <>
+            <h3>{mediaCopy.interviews[locale]}</h3>
+            <MediaGallery assets={interviews} locale={locale} data={data} />
+          </>
+        )}
       </EditorialSection>
       <EditorialSection title={x.young[locale]} id="young-eyes">
         <div className="young-art" aria-hidden="true">
@@ -352,12 +354,12 @@ export function Profile({
   locale,
   href,
 }: {
-  person: Pick<Person, "name" | "role" | "portrait">;
+  person: Pick<Person, "id" | "name" | "role">;
   locale: Locale;
   href?: string;
 }) {
-  const portrait =
-    person.portrait?.rights === "approved" ? person.portrait : undefined;
+  const portrait = relatedMedia("portrait", "guests", person.id)[0];
+  const interviews = relatedMedia("interview", "guests", person.id);
   const initials = person.name
     .trim()
     .split(/\s+/)
@@ -368,7 +370,7 @@ export function Profile({
     <article className="editorial-profile">
       <div className="profile-art">
         {portrait ? (
-          <img src={portrait.src} alt={portrait.alt[locale]} loading="lazy" />
+          <MediaImage asset={portrait} locale={locale} />
         ) : (
           <span aria-hidden="true">{initials}</span>
         )}
@@ -382,7 +384,10 @@ export function Profile({
           )}
         </h3>
         {person.role && <span>{person.role[locale]}</span>}
-        {portrait && <small>{portrait.credit}</small>}
+        {portrait && <MediaCredit asset={portrait} locale={locale} />}
+        {interviews.length > 0 && (
+          <MediaGallery assets={interviews} locale={locale} />
+        )}
       </div>
     </article>
   );
@@ -412,7 +417,11 @@ export function PeopleStories({ data, locale }: Props) {
         {highlights.map((award) => (
           <Profile
             key={award.id}
-            person={{ name: award.recipient, role: award.title }}
+            person={{
+              id: "award-" + award.id,
+              name: award.recipient,
+              role: award.title,
+            }}
             locale={locale}
             href={link(locale, "archive") + "#archive-awards"}
           />
@@ -428,73 +437,20 @@ export function PeopleStories({ data, locale }: Props) {
   );
 }
 
-function ArchiveAsset({
-  asset,
-  locale,
-  data,
-}: {
-  asset: ArchiveMedia;
-  locale: Locale;
-  data: Festival;
-}) {
-  const related = data.films.filter(
-    (film) => visible(film) && asset.filmIds?.includes(film.id),
-  );
-  return (
-    <figure className="archive-asset">
-      {asset.format === "image" ? (
-        <img src={asset.url} loading="lazy" alt={asset.caption[locale]} />
-      ) : asset.format === "video" ? (
-        <video
-          src={asset.url}
-          controls
-          preload="none"
-          aria-label={asset.caption[locale]}
-        >
-          {asset.captions && (
-            <track
-              kind="captions"
-              src={asset.captions.src}
-              srcLang={asset.captions.locale}
-              label={asset.captions.label}
-            />
-          )}
-        </video>
-      ) : (
-        <EditorialLink href={asset.url}>{asset.caption[locale]}</EditorialLink>
-      )}
-      <figcaption>
-        {asset.format !== "link" && asset.caption[locale]}{" "}
-        <span>{asset.credit}</span>
-        {asset.language && (
-          <span lang={asset.language}> · {asset.language.toUpperCase()}</span>
-        )}
-      </figcaption>
-      {related.map((film) => (
-        <EditorialLink key={film.id} href={link(locale, "films", film.id)}>
-          {film.title}
-        </EditorialLink>
-      ))}
-    </figure>
-  );
-}
-
 export function ArchiveFeature({ data, locale }: Props) {
-  const assets = (data.archiveMedia ?? []).filter(
-    (asset) =>
-      visible(asset) && asset.year === 2026 && asset.rights === "approved",
+  const assets = media.filter(
+    (asset) => asset.edition === 2026 && asset.archive,
   );
+  const chapters = Object.keys(x.archiveKinds) as ArchiveKind[];
   const highlights = [
     { kind: "screenings", href: "#archive-screenings", Icon: Clapperboard },
     { kind: "awards", href: "#archive-awards", Icon: Sparkles },
     { kind: "press", href: "#archive-press", Icon: Headphones },
   ] as const;
-  const missing = (
-    Object.keys(x.archiveKinds) as ArchiveMedia["kind"][]
-  ).filter(
+  const missing = chapters.filter(
     (kind) =>
       !highlights.some((item) => item.kind === kind) &&
-      !assets.some((asset) => asset.kind === kind),
+      !assets.some((asset) => asset.archive === kind),
   );
   return (
     <>
@@ -514,18 +470,15 @@ export function ArchiveFeature({ data, locale }: Props) {
             </a>
           ))}
         </div>
-        {assets.length > 0 && (
-          <div className="editorial-grid archive-assets">
-            {assets.map((asset) => (
-              <ArchiveAsset
-                key={asset.id}
-                asset={asset}
-                data={data}
-                locale={locale}
-              />
-            ))}
-          </div>
-        )}
+        {chapters.map((kind) => {
+          const items = assets.filter((asset) => asset.archive === kind);
+          return items.length ? (
+            <section key={kind} className="archive-media-chapter">
+              <h3>{x.archiveKinds[kind][locale]}</h3>
+              <MediaGallery assets={items} locale={locale} data={data} />
+            </section>
+          ) : null;
+        })}
         {missing.length > 0 && (
           <details className="archive-pending">
             <summary>

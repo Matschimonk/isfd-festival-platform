@@ -1,0 +1,144 @@
+[
+  {
+    "edition": 2026,
+    "title": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "description": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "credit": "Replace with the photographer or filmmaker",
+    "copyrightOwner": "Replace with the rights holder",
+    "source": "https://example.org/original-catalogue",
+    "rights": "pending",
+    "status": "draft",
+    "related": {
+      "venues": [
+        "acud"
+      ]
+    },
+    "id": "example-gallery-photo",
+    "type": "image",
+    "role": "archive",
+    "archive": "gallery",
+    "src": "https://example.org/photo-1920.webp",
+    "thumbnail": "https://example.org/photo-thumb.webp",
+    "width": 1920,
+    "height": 1080,
+    "variants": [
+      {
+        "src": "https://example.org/photo-640.webp",
+        "width": 640
+      }
+    ],
+    "alt": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    }
+  },
+  {
+    "edition": 2026,
+    "title": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "description": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "credit": "Replace with the photographer or filmmaker",
+    "copyrightOwner": "Replace with the rights holder",
+    "source": "https://example.org/original-catalogue",
+    "rights": "pending",
+    "status": "draft",
+    "related": {
+      "films": [
+        "bellissima"
+      ]
+    },
+    "id": "example-poster",
+    "type": "image",
+    "role": "poster",
+    "src": "https://example.org/poster.webp",
+    "width": 900,
+    "height": 1200,
+    "alt": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    }
+  },
+  {
+    "edition": 2026,
+    "title": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "description": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "credit": "Replace with the photographer or filmmaker",
+    "copyrightOwner": "Replace with the rights holder",
+    "source": "https://example.org/original-catalogue",
+    "rights": "pending",
+    "status": "draft",
+    "related": {
+      "films": [
+        "bellissima"
+      ]
+    },
+    "id": "example-video",
+    "type": "video",
+    "role": "preview",
+    "archive": "clips",
+    "src": "https://example.org/excerpt.mp4",
+    "thumbnail": "https://example.org/excerpt.webp",
+    "language": "it",
+    "captions": [
+      {
+        "src": "https://example.org/it.vtt",
+        "locale": "it",
+        "label": "Italiano"
+      }
+    ]
+  },
+  {
+    "edition": 2026,
+    "title": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "description": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    },
+    "credit": "Replace with the photographer or filmmaker",
+    "copyrightOwner": "Replace with the rights holder",
+    "source": "https://example.org/original-catalogue",
+    "rights": "pending",
+    "status": "draft",
+    "related": {},
+    "id": "example-podcast",
+    "type": "audio",
+    "role": "podcast",
+    "src": "https://example.org/episode.mp3",
+    "language": "it",
+    "transcript": {
+      "en": "REPLACE WITH ENGLISH COPY",
+      "it": "INSERIRE IL TESTO ITALIANO",
+      "de": "DEUTSCHEN TEXT EINFÜGEN"
+    }
+  }
+]
