@@ -35,6 +35,10 @@ The homepage leads into the seven-day overview, genre explorer, timeline, Academ
 - The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [Italian screening programme](https://www.italyshortfilmdays.com/it/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. Screening times are listed at programme-block level.
 - The [pre-merge review](docs/pre-merge-review.md) records the resolved 2026 credits, outstanding editorial questions and production release checks. Remaining 2027 work includes confirming exact dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers.
 
+## Canonical site origin
+
+Set `VITE_SITE_ORIGIN` at build time to a bare HTTPS origin. The default is the current festival sandbox. Vite uses the same public value for both the browser bundle and the prerender command, so canonicals, alternate links, sharing metadata, JSON-LD and the sitemap use the same origin. Navigation and asset URLs remain relative to the site root. A local migration test can use `VITE_SITE_ORIGIN=https://www.italyshortfilmdays.com npm run build`. The deployed domain and production workflow are managed separately.
+
 ## Static routes and SEO
 
 - The published URLs start with `/it/`, `/de/`, or `/en/`. Details use paths such as `/de/films/bellissima/` and `/it/programme/thu-night/`. Keep the trailing slash when sharing links. Each URL is backed by its own `index.html`, and the browser hydrates that page to enable navigation controls and filters.
