@@ -103,15 +103,6 @@ nav a:hover,
   font-size: 11px;
   font-weight: 700;
 }
-.languages button {
-  border: 0;
-  background: none;
-  padding: 5px 3px;
-  color: inherit;
-}
-.languages button[aria-pressed="true"] {
-  color: var(--red);
-}
 .hero {
   position: relative;
   isolation: isolate;
@@ -679,6 +670,13 @@ nav a[aria-current="page"],
   }
   .header-inner .languages {
     margin-left: 0;
+    gap: 2px;
+  }
+  .languages a {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    min-width: 30px;
   }
   .header-inner nav {
     display: none;

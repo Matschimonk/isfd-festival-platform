@@ -8,6 +8,12 @@ import { repository } from "./archive";
 import {
   categories,
   days,
+  defaultLocale,
+  isLocale,
+  localeNames,
+  locales,
+  localizedEditorialText,
+  openGraphLocales,
   themes,
   translate,
   visible,
@@ -28,7 +34,7 @@ const section = params.get("page") ?? "home";
 const detail = params.get("id");
 const initialLocale = params.get("lang");
 type Page = keyof typeof pages;
-type T = (text: Partial<LocalizedContent>) => string;
+type T = (text: LocalizedContent) => string;
 const isPage = (value: string): value is Page => Object.hasOwn(pages, value);
 
 function link(locale: Locale, page: Page = "home", id?: string) {
@@ -309,7 +315,7 @@ function FilmDetails({
   locale: Locale;
   t: T;
 }) {
-  const synopsis = film.synopsis && t(film.synopsis);
+  const synopsis = localizedEditorialText(film.synopsis, locale);
   const rows = [
     [ui.director, film.directors?.join(", ")],
     [ui.year, film.year],
@@ -338,7 +344,11 @@ function FilmDetails({
             </div>
           ))}
       </dl>
-      {synopsis ? <p>{synopsis}</p> : <p>{t(ui.unknown)}</p>}
+      {synopsis ? (
+        <p>{synopsis}</p>
+      ) : (
+        <p>{t(film.synopsis ? ui.translationPending : ui.unknown)}</p>
+      )}
       {film.stills?.map((src) => (
         <img
           className="detail-image"
@@ -490,14 +500,26 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
 }
 const descriptions = {
   home: ui.intro,
-  films: ui.selection,
+  films: {
+    ...ui.selection,
+    de: "Offizielle Auswahl 2027 und Kurzfilme aus dem Festivalarchiv 2026.",
+  },
   programme: ui.outline,
-  academy: themes[1],
-  media: pages.media,
+  academy: {
+    ...themes[1],
+    de: "Filmbildung, Workshops und Gespräche für Schulen, junges Publikum und Filmschaffende.",
+  },
+  media: {
+    ...pages.media,
+    de: "Pressemitteilungen, Interviews und redaktionelle Beiträge zum Festival.",
+  },
   venues: ui.venuePending,
   tickets: ui.sale,
   festival: ui.mission,
-  archive: ui.archive,
+  archive: {
+    ...ui.archive,
+    de: "Filme, Vorführungen, Spielorte und Preise der ersten Festivalausgabe 2026.",
+  },
 };
 function useMetadata({
   locale,
@@ -528,11 +550,13 @@ function useMetadata({
       'meta[property="og:url"]',
       site + "/" + link(locale, page, detail ?? undefined),
     );
-    meta('meta[property="og:locale"]', locale === "it" ? "it_IT" : "en_GB");
-    meta(
-      'meta[property="og:locale:alternate"]',
-      locale === "it" ? "en_GB" : "it_IT",
-    );
+    meta('meta[property="og:locale"]', openGraphLocales[locale]);
+    const alternates = locales.filter((lang) => lang !== locale);
+    document
+      .querySelectorAll('meta[property="og:locale:alternate"]')
+      .forEach((tag, index) =>
+        tag.setAttribute("content", openGraphLocales[alternates[index]]),
+      );
     meta('meta[name="twitter:title"]', document.title);
     meta('meta[name="twitter:description"]', description);
     document
@@ -541,7 +565,7 @@ function useMetadata({
         "href",
         site + "/" + link(locale, page, detail ?? undefined),
       );
-    for (const lang of ["en", "it"] as const)
+    for (const lang of locales)
       document
         .querySelector('link[hreflang="' + lang + '"]')
         ?.setAttribute(
@@ -574,11 +598,12 @@ function useMetadata({
 }
 function App() {
   const [locale] = useState<Locale>(() => {
-    if (initialLocale === "en" || initialLocale === "it") return initialLocale;
+    if (isLocale(initialLocale)) return initialLocale;
     try {
-      return localStorage.getItem("festival-locale") === "it" ? "it" : "en";
+      const saved = localStorage.getItem("festival-locale");
+      return isLocale(saved) ? saved : defaultLocale;
     } catch {
-      return "en";
+      return defaultLocale;
     }
   });
   const [data, setData] = useState<Festival>();
@@ -620,11 +645,10 @@ function App() {
           (page === "home" ? t(ui.headline) : t(pages[page])))));
   const description = missing
     ? t(ui.notFound)
-    : film?.synopsis
-      ? t(film.synopsis)
-      : film
-        ? film.title + " · " + t(ui.lineup)
-        : t(descriptions[page]);
+    : film
+      ? (localizedEditorialText(film.synopsis, locale) ??
+        film.title + " · " + t(ui.lineup))
+      : t(descriptions[page]);
   useMetadata({ locale, page, title, description, film, missing });
   let body: ReactNode;
   if (!data)
@@ -874,13 +898,13 @@ function App() {
               </a>
             ))}
           </nav>
-          <div className="languages" aria-label={t(ui.language)}>
-            {(["en", "it"] as const).map((lang) => (
+          <div className="languages" role="group" aria-label={t(ui.language)}>
+            {locales.map((lang) => (
               <a
                 key={lang}
                 href={link(lang, page, detail ?? undefined)}
                 lang={lang}
-                aria-label={lang === "en" ? "English" : "Italiano"}
+                aria-label={localeNames[lang]}
                 aria-current={locale === lang ? "true" : undefined}
               >
                 {lang.toUpperCase()}

@@ -1,6 +1,24 @@
-export type Locale = "en" | "it";
+export const locales = ["it", "de", "en"] as const;
+export type Locale = (typeof locales)[number];
+export const defaultLocale: Locale = "en";
+export const isLocale = (value: unknown): value is Locale =>
+  locales.some((locale) => locale === value);
+export const localeNames: Record<Locale, string> = {
+  it: "Italiano",
+  de: "Deutsch",
+  en: "English",
+};
+export const openGraphLocales: Record<Locale, string> = {
+  it: "it_IT",
+  de: "de_DE",
+  en: "en_GB",
+};
 export type LocalizedContent = Record<Locale, string>;
-export const l = (en: string, it: string): LocalizedContent => ({ en, it });
+export const l = (en: string, it: string, de: string): LocalizedContent => ({
+  en,
+  it,
+  de,
+});
 export type EditorialStatus = "draft" | "verified" | "published";
 interface RecordBase {
   id: string;
@@ -114,32 +132,48 @@ export interface FestivalRepository {
   getFestival(): Promise<Festival>;
 }
 export const visible = ({ status }: RecordBase) => status === "published";
-export const translate = (copy: Partial<LocalizedContent>, locale: Locale) =>
-  copy[locale] ?? copy.en ?? copy.it ?? "";
+export const translate = (copy: LocalizedContent, locale: Locale) =>
+  copy[locale];
+export const localizedEditorialText = (
+  copy: Partial<LocalizedContent> | undefined,
+  locale: Locale,
+) => copy?.[locale]?.trim() || undefined;
 export const days = [
-  l("Monday", "Lunedì"),
-  l("Tuesday", "Martedì"),
-  l("Wednesday", "Mercoledì"),
-  l("Thursday", "Giovedì"),
-  l("Friday", "Venerdì"),
-  l("Saturday", "Sabato"),
-  l("Sunday", "Domenica"),
+  l("Monday", "Lunedì", "Montag"),
+  l("Tuesday", "Martedì", "Dienstag"),
+  l("Wednesday", "Mercoledì", "Mittwoch"),
+  l("Thursday", "Giovedì", "Donnerstag"),
+  l("Friday", "Venerdì", "Freitag"),
+  l("Saturday", "Sabato", "Samstag"),
+  l("Sunday", "Domenica", "Sonntag"),
 ];
 export const themes = [
-  l("Press & Opening Day", "Stampa e apertura"),
-  l("Schools & Young Audiences", "Scuole e giovani spettatori"),
-  l("Industry & Conversations", "Industria e conversazioni"),
-  l("Official Screenings", "Proiezioni ufficiali"),
-  l("Official Screenings", "Proiezioni ufficiali"),
-  l("Screenings & Afterparty", "Proiezioni e festa"),
-  l("Soft Landing Brunch", "Brunch di chiusura"),
+  l("Press & Opening Day", "Stampa e apertura", "Presse und Festivaleröffnung"),
+  l(
+    "Schools & Young Audiences",
+    "Scuole e giovani spettatori",
+    "Schulen und junges Publikum",
+  ),
+  l(
+    "Industry & Conversations",
+    "Industria e conversazioni",
+    "Filmbranche und Gespräche",
+  ),
+  l("Official Screenings", "Proiezioni ufficiali", "Offizielle Vorführungen"),
+  l("Official Screenings", "Proiezioni ufficiali", "Offizielle Vorführungen"),
+  l(
+    "Screenings & Afterparty",
+    "Proiezioni e festa",
+    "Vorführungen und Abschlussparty",
+  ),
+  l("Soft Landing Brunch", "Brunch di chiusura", "Brunch zum Ausklang"),
 ];
 export const categories: Record<Category, LocalizedContent> = {
-  press: l("Press", "Stampa"),
-  education: l("Education", "Formazione"),
-  industry: l("Industry", "Industria"),
-  screenings: l("Screenings", "Proiezioni"),
-  community: l("Community", "Comunità"),
+  press: l("Press", "Stampa", "Presse"),
+  education: l("Education", "Formazione", "Filmbildung"),
+  industry: l("Industry", "Industria", "Filmbranche"),
+  screenings: l("Screenings", "Proiezioni", "Vorführungen"),
+  community: l("Community", "Comunità", "Begegnungen"),
 };
 const event = (
   id: string,
@@ -147,12 +181,13 @@ const event = (
   category: Category,
   en: string,
   it: string,
+  de: string,
   period?: FestivalEvent["period"],
 ): FestivalEvent => ({
   id,
   day,
   category,
-  title: l(en, it),
+  title: l(en, it, de),
   period,
   edition: 2027,
   status: "published",
@@ -164,6 +199,7 @@ export const events = [
     "press",
     "Press conference",
     "Conferenza stampa",
+    "Pressekonferenz",
   ),
   event(
     "press-interviews",
@@ -171,6 +207,7 @@ export const events = [
     "press",
     "Press interviews",
     "Interviste per la stampa",
+    "Presseinterviews",
   ),
   event(
     "social",
@@ -178,6 +215,7 @@ export const events = [
     "press",
     "Social media production",
     "Produzione di contenuti per i social",
+    "Produktion von Social-Media-Inhalten",
   ),
   event(
     "premiere",
@@ -185,6 +223,7 @@ export const events = [
     "screenings",
     "Podcast premiere / first screening",
     "Debutto del podcast / prima proiezione",
+    "Podcast-Premiere / erste Filmvorführung",
   ),
   event(
     "opening",
@@ -192,6 +231,7 @@ export const events = [
     "community",
     "Festival programme introduction",
     "Presentazione del programma",
+    "Vorstellung des Festivalprogramms",
   ),
   event(
     "school-films",
@@ -199,6 +239,7 @@ export const events = [
     "screenings",
     "School screenings",
     "Proiezioni per le scuole",
+    "Schulvorführungen",
   ),
   event(
     "film-education",
@@ -206,6 +247,7 @@ export const events = [
     "education",
     "Film education",
     "Educazione al cinema",
+    "Filmvermittlung",
   ),
   event(
     "student-discussions",
@@ -213,6 +255,7 @@ export const events = [
     "education",
     "Student discussions",
     "Discussioni con le classi",
+    "Gespräche mit Schulklassen",
   ),
   event(
     "school-guests",
@@ -220,6 +263,7 @@ export const events = [
     "education",
     "Filmmaker encounters",
     "Incontri con chi fa cinema",
+    "Begegnungen mit Filmschaffenden",
   ),
   event(
     "industry-interviews",
@@ -227,15 +271,24 @@ export const events = [
     "industry",
     "Industry interviews",
     "Interviste con professionisti del settore",
+    "Interviews mit Fachleuten aus der Filmbranche",
   ),
-  event("workshops", 2, "education", "Workshops", "Laboratori"),
-  event("masterclasses", 2, "education", "Masterclasses", "Masterclass"),
+  event("workshops", 2, "education", "Workshops", "Laboratori", "Workshops"),
+  event(
+    "masterclasses",
+    2,
+    "education",
+    "Masterclasses",
+    "Masterclass",
+    "Masterclasses",
+  ),
   event(
     "industry-networking",
     2,
     "industry",
     "Professional meetings and networking",
     "Incontri professionali e networking",
+    "Branchentreffen und Vernetzung",
   ),
   event(
     "thu-day",
@@ -243,6 +296,7 @@ export const events = [
     "screenings",
     "Daytime short-film programmes",
     "Programmi di cortometraggi diurni",
+    "Kurzfilmprogramme tagsüber",
     "day",
   ),
   event(
@@ -251,6 +305,7 @@ export const events = [
     "screenings",
     "Evening and night screenings",
     "Proiezioni serali e notturne",
+    "Vorführungen am Abend und in der Nacht",
     "night",
   ),
   event(
@@ -259,6 +314,7 @@ export const events = [
     "industry",
     "Filmmaker Q&A",
     "Domande e risposte con registi e registe",
+    "Publikumsgespräch mit Filmschaffenden",
   ),
   event(
     "fri-day",
@@ -266,6 +322,7 @@ export const events = [
     "screenings",
     "Daytime programmes",
     "Programmi diurni",
+    "Tagesprogramm",
     "day",
   ),
   event(
@@ -274,6 +331,7 @@ export const events = [
     "screenings",
     "Night programmes",
     "Programmi notturni",
+    "Nachtprogramm",
     "night",
   ),
   event(
@@ -282,6 +340,7 @@ export const events = [
     "screenings",
     "Official Selection",
     "Selezione ufficiale",
+    "Offizielle Auswahl",
   ),
   event(
     "fri-guests",
@@ -289,6 +348,7 @@ export const events = [
     "industry",
     "Filmmaker encounters",
     "Incontri con chi fa cinema",
+    "Begegnungen mit Filmschaffenden",
   ),
   event(
     "sat-day",
@@ -296,6 +356,7 @@ export const events = [
     "screenings",
     "Daytime screenings",
     "Proiezioni diurne",
+    "Vorführungen tagsüber",
     "day",
   ),
   event(
@@ -304,6 +365,7 @@ export const events = [
     "screenings",
     "Night screenings",
     "Proiezioni notturne",
+    "Nachtvorführungen",
     "night",
   ),
   event(
@@ -312,6 +374,7 @@ export const events = [
     "community",
     "Festival Afterparty",
     "Festa del festival",
+    "Festival-Abschlussparty",
   ),
   event(
     "brunch",
@@ -319,6 +382,7 @@ export const events = [
     "community",
     "Community meetup",
     "Incontro con la comunità",
+    "Treffen der Festivalgemeinschaft",
   ),
   event(
     "contributors",
@@ -326,6 +390,7 @@ export const events = [
     "community",
     "Filmmakers, participants and contributors",
     "Registi, partecipanti e persone che hanno contribuito",
+    "Filmschaffende, Teilnehmende und Mitwirkende",
   ),
   event(
     "partners",
@@ -333,6 +398,7 @@ export const events = [
     "community",
     "Partners and collaborators",
     "Partner e collaboratori",
+    "Partner und Kooperationsbeteiligte",
   ),
   event(
     "wrap",
@@ -340,5 +406,6 @@ export const events = [
     "community",
     "Informal networking and festival wrap-up",
     "Networking informale e chiusura del festival",
+    "Informeller Austausch und Festivalausklang",
   ),
 ];

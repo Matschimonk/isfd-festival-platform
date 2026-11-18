@@ -34,10 +34,11 @@ const blocks = [
     {
       ...film("bellissima", "Bellissima", ["Alessandro Capitani"], 12),
       year: 2015,
-      country: l("Italy", "Italia"),
+      country: l("Italy", "Italia", "Italien"),
       synopsis: l(
         "After being mocked at a nightclub, Veronica retreats to the bathroom. An unexpected encounter changes the course of her night.",
         "Derisa in discoteca, Veronica si rifugia in bagno. Un incontro inatteso cambia il corso della serata.",
+        "Nachdem Veronica in einem Nachtclub verspottet wurde, zieht sie sich auf die Toilette zurück. Eine unerwartete Begegnung gibt ihrem Abend eine neue Wendung.",
       ),
       links: ["https://www.sayonarafilm.com/project/bellissima/"],
     },
@@ -52,10 +53,11 @@ const blocks = [
     {
       ...film("playing-god", "Playing God", ["Matteo Burani"], 9),
       year: 2024,
-      country: l("Italy, France", "Italia, Francia"),
+      country: l("Italy, France", "Italia, Francia", "Italien, Frankreich"),
       synopsis: l(
         "A sculptor’s pursuit of perfection brings a clay figure to life.",
         "La ricerca della perfezione da parte di uno scultore dà vita a una figura d’argilla.",
+        "Auf der Suche nach Vollkommenheit erweckt ein Bildhauer eine Tonfigur zum Leben.",
       ),
       links: ["https://sicvenezia.it/en/films/playing-god/"],
     },
@@ -94,28 +96,36 @@ const screenings: Screening[] = [
     date: "2026-06-04",
     times: ["19:00", "21:30"],
     venueId: "lichtblick",
-    title: l("Opening night", "Serata inaugurale"),
+    title: l("Opening night", "Serata inaugurale", "Eröffnungsabend"),
   },
   {
     id: "2026-friday",
     date: "2026-06-05",
     times: ["18:30", "21:30"],
     venueId: "il-kino",
-    title: l("Official screenings", "Proiezioni ufficiali"),
+    title: l(
+      "Official screenings",
+      "Proiezioni ufficiali",
+      "Offizielle Vorführungen",
+    ),
   },
   {
     id: "2026-saturday",
     date: "2026-06-06",
     times: ["19:00"],
     venueId: "acud",
-    title: l("Official screenings", "Proiezioni ufficiali"),
+    title: l(
+      "Official screenings",
+      "Proiezioni ufficiali",
+      "Offizielle Vorführungen",
+    ),
   },
   {
     id: "2026-closing",
     date: "2026-06-07",
     times: ["19:00"],
     venueId: "acud",
-    title: l("Awards night", "Serata dei premi"),
+    title: l("Awards night", "Serata dei premi", "Preisverleihung"),
   },
 ].map((entry, i) => ({
   ...entry,
@@ -130,13 +140,21 @@ const festival: Festival = {
     {
       id: "2027",
       year: 2027,
-      label: l("June 2027 · Berlin", "Giugno 2027 · Berlino"),
+      label: l(
+        "June 2027 · Berlin",
+        "Giugno 2027 · Berlino",
+        "Juni 2027 · Berlin",
+      ),
       status: published,
     },
     {
       id: "2026",
       year: 2026,
-      label: l("4–7 June 2026 · Berlin", "4–7 giugno 2026 · Berlino"),
+      label: l(
+        "4–7 June 2026 · Berlin",
+        "4–7 giugno 2026 · Berlino",
+        "4.–7. Juni 2026 · Berlin",
+      ),
       starts: "2026-06-04",
       ends: "2026-06-07",
       status: published,
@@ -175,24 +193,24 @@ const festival: Festival = {
   awards: [
     {
       id: "film",
-      title: l("Best Film", "Miglior film"),
+      title: l("Best Film", "Miglior film", "Bester Film"),
       recipient: "Giulia Grandinetti",
       filmId: "majoneze",
     },
     {
       id: "director",
-      title: l("Best Director", "Miglior regia"),
+      title: l("Best Director", "Miglior regia", "Beste Regie"),
       recipient: "Paoli De Luca",
       filmId: "marina",
     },
     {
       id: "actress",
-      title: l("Best Actress", "Migliore attrice"),
+      title: l("Best Actress", "Migliore attrice", "Beste Darstellerin"),
       recipient: "Carlotta Gamba",
     },
     {
       id: "actor",
-      title: l("Best Actor", "Miglior attore"),
+      title: l("Best Actor", "Miglior attore", "Bester Darsteller"),
       recipient: "Giovanni Crozza Signoris",
     },
     {
@@ -200,18 +218,27 @@ const festival: Festival = {
       title: l(
         "MYmovies ONE Audience Award",
         "Premio del pubblico MYmovies ONE",
+        "Publikumspreis von MYmovies ONE",
       ),
       recipient: "Alessandro Capitani",
       filmId: "bellissima",
     },
     {
       id: "lifetime",
-      title: l("Lifetime Achievement Award", "Premio alla carriera"),
+      title: l(
+        "Lifetime Achievement Award",
+        "Premio alla carriera",
+        "Preis für das Lebenswerk",
+      ),
       recipient: "Valentina Lodovini",
     },
     {
       id: "guests",
-      title: l("Special Guest Awards", "Premi ospiti speciali"),
+      title: l(
+        "Special Guest Awards",
+        "Premi ospiti speciali",
+        "Ehrengastpreise",
+      ),
       recipient: "Sara Serraiocco, Antonio Bannò",
     },
   ].map((a) => ({
@@ -224,7 +251,11 @@ const festival: Festival = {
     {
       id: "patron",
       name: "Valentina Lodovini",
-      role: l("2026 festival patron", "Madrina del festival 2026"),
+      role: l(
+        "2026 festival patron",
+        "Madrina del festival 2026",
+        "Schirmherrin des Festivals 2026",
+      ),
       status: published,
       source: experience,
     },
@@ -244,10 +275,12 @@ const festival: Festival = {
       title: l(
         "The first festival programme",
         "Il programma della prima edizione",
+        "Das Programm der ersten Festivalausgabe",
       ),
       summary: l(
         "TaxiDrivers on four days of screenings across three independent cinemas.",
         "TaxiDrivers racconta quattro giorni di proiezioni in tre cinema indipendenti.",
+        "TaxiDrivers berichtet über vier Tage mit Filmvorführungen in drei unabhängigen Kinos.",
       ),
       url: press,
       kind: "press",
@@ -258,10 +291,12 @@ const festival: Festival = {
       title: l(
         "A look back at the first edition",
         "Uno sguardo alla prima edizione",
+        "Rückblick auf die erste Festivalausgabe",
       ),
       summary: l(
         "The festival’s recap of screenings, guests and awards.",
         "Il riepilogo del festival con proiezioni, ospiti e premi.",
+        "Der Festivalrückblick auf Vorführungen, Gäste und Preise.",
       ),
       url: experience,
       kind: "editorial",
@@ -272,10 +307,12 @@ const festival: Festival = {
       title: l(
         "Carlotta Gamba and Ciao Varsavia",
         "Carlotta Gamba e Ciao Varsavia",
+        "Carlotta Gamba und Ciao Varsavia",
       ),
       summary: l(
         "TaxiDrivers covers the actor’s festival appearance.",
         "TaxiDrivers racconta la partecipazione dell’attrice al festival.",
+        "TaxiDrivers berichtet über den Festivalauftritt der Schauspielerin.",
       ),
       url: "https://www.taxidrivers.it/533202/italy-short-film-days/carlotta-gamba-allitaly-short-film-days-berlin-con-il-corto-ciao-varsavia.html",
       kind: "news",

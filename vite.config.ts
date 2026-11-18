@@ -1,11 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { defineConfig } from "vite";
 import { repository } from "./src/archive";
-import { visible } from "./src/content";
+import { locales, visible, type Locale } from "./src/content";
 import { pages } from "./src/copy";
 
 const origin = "https://italyshortfilmdays2027.rawdrivers.org/";
-const locales = ["en", "it"] as const;
 const xml = (value: string) => value.replaceAll("&", "&amp;");
 
 export default defineConfig({
@@ -27,7 +26,7 @@ export default defineConfig({
         ];
         const href = (
           { page, id }: (typeof routes)[number],
-          locale: (typeof locales)[number],
+          locale: Locale,
         ) => {
           const url = new URL(origin);
           if (page !== "home") url.searchParams.set("page", page);

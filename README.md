@@ -1,6 +1,6 @@
 # Italy Short Film Days Berlin 2027
 
-A bilingual React, TypeScript and Vite festival homepage. The June 2027 programme is an advance outline. Exact dates, times, venues and ticketing are pending. The 2026 archive uses the official festival retrospective and the TaxiDrivers programme.
+A trilingual React, TypeScript and Vite festival homepage. The June 2027 programme is an advance outline. Exact dates, times, venues and ticketing are pending. The 2026 archive uses the official festival retrospective and the TaxiDrivers programme.
 
 ## Setup
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Select EN or IT in the header, explore the seven-day programme with day and category filters, or open a film from the 2026 archive. Language is carried in the URL and remembered for new visits.
+Open the local URL printed by Vite. Select IT, DE or EN in the header, explore the seven-day programme with day and category filters, or open a film from the 2026 archive. Language is carried in the URL and remembered for new visits.
 
 ```sh
 npm run build
@@ -22,7 +22,7 @@ The build checks TypeScript and writes static assets to `dist/`. Preview serves 
 
 ## WordPress integration
 
-`src/content.ts` defines the domain models, bilingual programme outline and `FestivalRepository` contract. `src/archive.ts` implements the mock repository with separately sourced historical records. Only published records are shown publicly. A future CMS adapter should validate API responses, provide stable IDs and source links, and normalise references and translations before returning them. Global interface translations live in `src/copy.ts`.
+`src/content.ts` defines the domain models, trilingual programme outline and `FestivalRepository` contract. `src/archive.ts` implements the mock repository with separately sourced historical records. Only published records are shown publicly. A future CMS adapter should validate API responses, provide stable IDs and source links, and normalise references and translations before returning them. Global interface translations live in `src/copy.ts`. Required localized fields need Italian, German and English. Optional historical synopses can be partial. Supply a synopsis only after editorial review for that language. Where the requested translation is unavailable, the site shows a localized availability notice. Film titles, names, and original-language material retain their original wording. The URL language takes priority over the saved preference, and English is the default for first visits.
 
 ## Archive and editorial data
 
