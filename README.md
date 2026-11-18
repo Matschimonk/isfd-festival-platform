@@ -20,6 +20,10 @@ npm run preview
 
 The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
+## Festival Experience V2
+
+The chapter navigation keeps Tickets visible and groups editorial pages around the programme. The film, people and archive components accept rights-approved media with credits. The [V2 review](docs/experience-v2-review.md) includes matched screenshots and the remaining media brief.
+
 ## Festival Experience V1
 
 The homepage leads into the seven-day overview, genre explorer, timeline, Academy, festival map preview and 2026 retrospective. Day and night filters keep programme entries visible when they have no assigned period. The genre explorer only uses `Film.verifiedGenres`; the archive currently has no approved discovery tags. The archive gallery renders only published 2026 records with approved rights. The current repository has no approved retrospective photos or videos, so the public section displays localized empty states and links to verified coverage, screenings and awards.
