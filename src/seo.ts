@@ -228,6 +228,11 @@ export function escapeMarkup(value: string) {
     .replaceAll("'", "&#39;");
 }
 
+export const indexPolicy =
+  import.meta.env.VITE_PRESENTATION_PREVIEW === "1"
+    ? "noindex,nofollow"
+    : "index,follow";
+
 export function renderHead(data: Festival, route: Route, locale: Locale) {
   const { title, description, canonical } = pageMetadata(data, route, locale);
   const esc = escapeMarkup;
@@ -239,7 +244,7 @@ export function renderHead(data: Festival, route: Route, locale: Locale) {
   return [
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}" />`,
-    '<meta name="robots" content="index,follow" />',
+    `<meta name="robots" content="${indexPolicy}" />`,
     `<link rel="canonical" href="${esc(canonical)}" />`,
     ...alternates(route).map(
       ({ locale: lang, url }) =>

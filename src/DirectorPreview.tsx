@@ -27,6 +27,11 @@ const copy = {
     "Il caricamento del lettore si collega a YouTube.",
     "Beim Laden des Players wird eine Verbindung zu YouTube hergestellt.",
   ),
+  trailerFallback: l(
+    "If the player is unavailable here, open the trailer on YouTube.",
+    "Se il lettore non è disponibile qui, apri il trailer su YouTube.",
+    "Falls der Player hier nicht verfügbar ist, öffne den Trailer auf YouTube.",
+  ),
   partners: l(
     "Put short cinema in focus.",
     "Metti a fuoco il cinema breve.",
@@ -162,6 +167,9 @@ export function Trailer({ locale }: { locale: Locale }) {
       <div className="v3-trailer-frame">
         {loaded ? (
           <iframe
+            ref={(frame) => {
+              frame?.focus();
+            }}
             title={copy.trailer[locale]}
             src="https://www.youtube-nocookie.com/embed/kCt7OSTjVGY?autoplay=1"
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
@@ -187,7 +195,7 @@ export function Trailer({ locale }: { locale: Locale }) {
       </div>
       <div className="v3-trailer-copy">
         <h2 id="trailer-title">{copy.trailer[locale]}</h2>
-        <p>{copy.privacyTrailer[locale]}</p>
+        <p>{(loaded ? copy.trailerFallback : copy.privacyTrailer)[locale]}</p>
         <a className="editorial-link" href={trailerUrl}>
           {copy.youtube[locale]} <ArrowUpRight size={16} />
         </a>
