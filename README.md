@@ -26,8 +26,8 @@ The build checks TypeScript, compiles the browser bundle, and runs a Node-only V
 
 ## Archive and editorial data
 
-- The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [official programme](https://www.italyshortfilmdays.com/en/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. The published sources disagree on the directing credit for Juggernaut, so that credit is omitted pending confirmation. Screening times are listed at programme-block level.
-- Remaining editorial work includes confirming 2027 dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers. Some 2026 films still need verified production metadata, translated synopses and rights-cleared artwork or trailers.
+- The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [Italian screening programme](https://www.italyshortfilmdays.com/it/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. Screening times are listed at programme-block level.
+- The [pre-merge review](docs/pre-merge-review.md) records the resolved 2026 credits, outstanding editorial questions and production release checks. Remaining 2027 work includes confirming exact dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers.
 
 ## Static routes and SEO
 

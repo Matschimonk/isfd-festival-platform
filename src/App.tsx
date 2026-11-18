@@ -64,7 +64,7 @@ function External({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 function dateLabel(date: string, locale: Locale) {
-  return new Intl.DateTimeFormat(locale, {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : locale, {
     dateStyle: "long",
     timeZone: "UTC",
   }).format(new Date(date + "T00:00:00Z"));
@@ -177,7 +177,7 @@ function Programme({
               setDay(e.target.value === "all" ? "all" : Number(e.target.value))
             }
           >
-            <option value="all">{t(ui.all)}</option>
+            <option value="all">{t(ui.allDays)}</option>
             {days.map((value, i) => (
               <option key={i} value={i}>
                 {t(value)}
@@ -192,7 +192,7 @@ function Programme({
             value={category}
             onChange={(e) => setCategory(e.target.value as Category | "all")}
           >
-            <option value="all">{t(ui.all)}</option>
+            <option value="all">{t(ui.allCategories)}</option>
             {Object.entries(categories).map(([key, value]) => (
               <option key={key} value={key}>
                 {t(value)}
@@ -417,7 +417,7 @@ function Media({
               value={kind}
               onChange={(e) => setKind(e.target.value as typeof kind)}
             >
-              <option value="all">{t(ui.all)}</option>
+              <option value="all">{t(ui.allCategories)}</option>
               {Object.entries(mediaKinds).map(([key, value]) => (
                 <option key={key} value={key}>
                   {t(value)}

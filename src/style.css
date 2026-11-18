@@ -171,7 +171,7 @@ nav a:hover,
   flex-wrap: wrap;
 }
 .hero-actions a {
-  min-height: 43px;
+  min-height: 44px;
   padding: 0 15px;
   display: inline-flex;
   align-items: center;
@@ -480,6 +480,11 @@ nav a[aria-current="page"],
   font-size: clamp(74px, 9vw, 138px);
   line-height: 0.85;
 }
+:lang(it) .hero h1,
+:lang(de) .hero h1 {
+  max-width: min(100%, 11ch);
+  overflow-wrap: anywhere;
+}
 .hero .exact {
   margin: 20px 0 0;
   font-size: 12px;
@@ -494,6 +499,7 @@ nav a[aria-current="page"],
     sans-serif;
   text-transform: uppercase;
   margin: 7px 0 22px;
+  overflow-wrap: anywhere;
 }
 .page-body h2 {
   font-size: clamp(23px, 3vw, 36px);
@@ -665,7 +671,7 @@ nav a[aria-current="page"],
     border: 1px solid var(--line);
     background: #181515;
     padding: 8px;
-    min-height: 40px;
+    min-height: 44px;
     font-size: 13px;
   }
   .header-inner .languages {
@@ -702,5 +708,8 @@ nav a[aria-current="page"],
   }
   .page-body {
     padding-block: 32px 45px;
+  }
+  .page-body h1 {
+    font-size: clamp(37px, 9vw, 50px);
   }
 }

@@ -9,15 +9,15 @@ import {
 
 const experience = "https://www.italyshortfilmdays.com/en/experience";
 const lineup = "https://www.italyshortfilmdays.com/en/line";
-const schedule = "https://www.italyshortfilmdays.com/en/program";
+const schedule = "https://www.italyshortfilmdays.com/it/program";
 const press =
   "https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html";
 const published = "published" as const;
 const film = (
   id: string,
   title: string,
-  directors?: string[],
-  minutes?: number,
+  directors: string[],
+  minutes: number,
 ): Film => ({
   id,
   title,
@@ -25,7 +25,7 @@ const film = (
   minutes,
   edition: 2026,
   status: published,
-  source: experience,
+  source: schedule,
   links: [lineup],
 });
 
@@ -49,7 +49,7 @@ const blocks = [
     film("piantone", "Il piantone", ["Flavia Mastrella", "Antonio Rezza"], 14),
   ],
   [
-    film("a-domani", "A domani", ["Emanuele Vicorito"]),
+    film("a-domani", "A domani", ["Emanuele Vicorito"], 18),
     {
       ...film("playing-god", "Playing God", ["Matteo Burani"], 9),
       year: 2024,
@@ -61,33 +61,56 @@ const blocks = [
       ),
       links: ["https://sicvenezia.it/en/films/playing-god/"],
     },
-    film("confessione", "La confessione", ["Nicola Sorcinelli"]),
-    film("niente", "Niente di speciale", ["Giovanni Conte"]),
-    film("aspis", "Aspis", ["Antonio Romagnoli"]),
-    film("fiori", "Fiori cadono", ["Ludovica Galletta"]),
-    film("teresina", "Teresina", ["Irene Belluzzi"]),
-    film("afternoon-call", "Afternoon Call", ["Maddalena Cellerino"]),
+    film("confessione", "La confessione", ["Nicola Sorcinelli"], 15),
+    film("niente", "Niente di speciale", ["Giovanni Conte"], 19),
+    film("aspis", "Aspis", ["Antonio Romagnoli"], 14),
+    film("fiori", "Fiori cadono", ["Ludovica Galletta"], 17),
+    film("teresina", "Teresina", ["Irene Belluzzi"], 20),
+    film("afternoon-call", "Afternoon Call", ["Maddalena Cellerino"], 5),
   ],
   [
-    film("plutone", "Plutone", ["Alessandro Padovani"]),
-    film("marcello", "Marcello", ["Maurizio Lombardi"]),
-    film("mur-du-son", "Le Mur du Son", ["Antonio La Camera"]),
-    film("quand-tu-dors", "Quand tu dors", ["Fratelli Rosa"]),
-    film("majoneze", "Majonezë", ["Giulia Grandinetti"]),
-    film("maestrale", "Maestrale", ["Nico Bonomolo"]),
-    film("fiji", "Fiji", ["Andrea La Medica"]),
-    film("fantasmi", "I fantasmi", ["Federico Papagna"]),
+    film("plutone", "Plutone", ["Alessandro Padovani"], 15),
+    film("marcello", "Marcello", ["Maurizio Lombardi"], 20),
+    film("mur-du-son", "Le Mur du Son", ["Antonio La Camera"], 12),
+    {
+      ...film(
+        "quand-tu-dors",
+        "Quand tu dors",
+        ["Pierluigi Rosa", "Salvator Rosa"],
+        17,
+      ),
+      links: [lineup, "https://www.festivaldelcinemaeuropeo.com/en/?p=12314"],
+    },
+    film("majoneze", "Majonezë", ["Giulia Grandinetti"], 22),
+    film("maestrale", "Maestrale", ["Nico Bonomolo"], 10),
+    {
+      ...film("fiji", "Fiji", ["Andrea Lamedica"], 11),
+      links: [lineup, "https://www.lightsonfilm.com/fiji.html"],
+    },
+    film("fantasmi", "I fantasmi", ["Federico Papagna"], 15),
   ],
   [
-    film("pinocchio", "Pinocchio Reborn", ["Matteo Cirillo"]),
-    film("domenica", "Domenica Sera", ["Matteo Tortone"]),
-    film("tempi", "Tempi supplementari", ["Matteo Memè"]),
-    film("marina", "Marina", ["Paoli De Luca"]),
-    film("ciao-varsavia", "Ciao Varsavia", ["Diletta Di Nicolantonio"]),
-    // The official selection and the retrospective disagree on the director.
-    film("juggernaut", "Juggernaut"),
-    film("cane-gatto", "Un cane miagola un gatto abbaia", ["Alessandro Prato"]),
-    film("1799-diario", "1799, diario", ["Fulvio Risuleo"]),
+    film("pinocchio", "Pinocchio Reborn", ["Matteo Cirillo"], 15),
+    film("domenica", "Domenica Sera", ["Matteo Tortone"], 16),
+    film("tempi", "Tempi supplementari", ["Matteo Memè"], 14),
+    film("marina", "Marina", ["Paoli De Luca"], 19),
+    film("ciao-varsavia", "Ciao Varsavia", ["Diletta Di Nicolantonio"], 19),
+    {
+      ...film(
+        "juggernaut",
+        "Juggernaut",
+        ["Daniele Ricci", "Emanuele Ricci"],
+        20,
+      ),
+      links: [lineup, "https://www.gioveshortfilmfestival.it/en/juggernaut/"],
+    },
+    film(
+      "cane-gatto",
+      "Un cane miagola un gatto abbaia",
+      ["Alessandro Prato"],
+      18,
+    ),
+    film("1799-diario", "1799, diario", ["Fulvio Risuleo"], 17),
   ],
 ];
 const screenings: Screening[] = [
@@ -131,7 +154,7 @@ const screenings: Screening[] = [
   ...entry,
   edition: 2026,
   status: published,
-  source: i === 0 ? schedule : press,
+  source: schedule,
   filmIds: blocks[i].map((f) => f.id),
 }));
 

@@ -47,7 +47,8 @@ export const ui = {
   ),
   day: l("Day", "Giorno", "Tag"),
   category: l("Category", "Categoria", "Kategorie"),
-  all: l("All", "Tutti", "Alle"),
+  allDays: l("All days", "Tutti i giorni", "Alle Tage"),
+  allCategories: l("All categories", "Tutte le categorie", "Alle Kategorien"),
   empty: l(
     "No events match these filters.",
     "Nessun evento corrisponde ai filtri.",
@@ -63,7 +64,7 @@ export const ui = {
   read: l("Read the original", "Leggi l’originale", "Originalbeitrag lesen"),
   articleDetails: l("Article details", "Dettagli dell’articolo", "Zum Beitrag"),
   register: l("Register", "Iscriviti", "Anmelden"),
-  director: l("Direction", "Regia", "Regie"),
+  director: l("Directed by", "Regia", "Regie"),
   unknown: l(
     "Details pending verification.",
     "Dettagli in attesa di verifica.",
@@ -147,7 +148,7 @@ export const ui = {
   historicalTimes: l(
     "Listed times refer to the programme block.",
     "Gli orari indicati si riferiscono al blocco di proiezioni.",
-    "Die angegebenen Uhrzeiten gelten für den gesamten Programmblock.",
+    "Die Uhrzeiten beziehen sich auf den Programmblock.",
   ),
   institution: l(
     "Italy Short Film Days Berlin",
