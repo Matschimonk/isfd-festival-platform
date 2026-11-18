@@ -3,7 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#101010" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      try {
+        const theme = localStorage.getItem("isfd-theme");
+        if (theme === "night" || theme === "day")
+          document.documentElement.dataset.festivalTheme = theme;
+      } catch {}
+    </script>
     <link rel="icon" type="image/webp" href="/images/hero.webp" />
     <!-- page-head:start -->
     <title>Italy Short Film Days Berlin 2027</title>
@@ -15,8 +22,12 @@
           display: grid;
         }
         .festival-header .header-inner .menu-toggle,
+        .festival-header .v3-theme,
         .page-body .filters,
-        .page-body .editorial-filters {
+        .page-body .editorial-filters,
+        .v3-news-form,
+        .v3-play,
+        #ticket-demo button {
           display: none;
         }
       </style>

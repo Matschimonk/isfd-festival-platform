@@ -23,6 +23,9 @@ const artworkAlt = l(
 );
 const publisher = { "@id": origin + "/#festival-organisation" };
 const descriptions = {
+  partners: pages.partners,
+  contact: pages.contact,
+  newsletter: pages.newsletter,
   home: ui.intro,
   films: l(
     "Explore short films from the 2026 festival archive and follow the official selection for 2027.",

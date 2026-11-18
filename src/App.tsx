@@ -15,6 +15,15 @@ import {
   type Screening,
 } from "./content";
 import { mediaKinds, pages, ui } from "./copy";
+import {
+  ApprovedExcerpts,
+  ContactPreview,
+  NewsletterPreview,
+  PartnersPreview,
+  PreviewMark,
+  TicketsPreview,
+  Trailer,
+} from "./DirectorPreview";
 import { Brand, Header } from "./Navigation";
 import {
   ArchiveFeature,
@@ -469,8 +478,14 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
   const [first, second] = t(ui.headline).split(/(?<=\.)\s+/);
   return (
     <>
-      <section className="hero experience-hero">
+      <section className="hero experience-hero v3-hero">
+        <div className="v3-key-visual" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
         <div className="shell hero-inner">
+          <PreviewMark locale={locale} />
           <div className="eyebrow">
             <span />
             {t(ui.date)}
@@ -492,6 +507,8 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
         </div>
       </section>
       <div className="shell page-body">
+        <Trailer locale={locale} />
+        <ApprovedExcerpts data={data} locale={locale} />
         <HomeFeatures data={data} locale={locale} />
         <section aria-labelledby="home-media">
           <h2 id="home-media">{t(pages.media)}</h2>
@@ -657,27 +674,18 @@ export function App({
           </>
         );
         break;
-      case "tickets": {
-        const offers = data.tickets.filter(
-          (o) => visible(o) && o.edition === 2027,
-        );
-        body = (
-          <>
-            {offers.length === 0 ? (
-              <Panel title={t(ui.coming)}>
-                <p>{t(ui.sale)}</p>
-              </Panel>
-            ) : (
-              offers.map((o) => (
-                <Panel key={o.id} title={t(o.label)}>
-                  {o.url && <External href={o.url}>{t(ui.ticket)}</External>}
-                </Panel>
-              ))
-            )}
-          </>
-        );
+      case "tickets":
+        body = <TicketsPreview locale={locale} />;
         break;
-      }
+      case "partners":
+        body = <PartnersPreview locale={locale} />;
+        break;
+      case "contact":
+        body = <ContactPreview locale={locale} />;
+        break;
+      case "newsletter":
+        body = <NewsletterPreview locale={locale} />;
+        break;
       case "festival":
         body = (
           <>
@@ -725,6 +733,8 @@ export function App({
         );
         body = (
           <>
+            <Trailer locale={locale} />
+            <ApprovedExcerpts data={data} locale={locale} edition={2026} />
             <ArchiveFeature data={data} locale={locale} />
             {edition && (
               <div className="eyebrow" id="2026">
@@ -800,6 +810,7 @@ export function App({
                 ← {t(pages[page])}
               </a>
             )}
+            <PreviewMark locale={locale} />
             <h1>{title}</h1>
             {body}
           </div>

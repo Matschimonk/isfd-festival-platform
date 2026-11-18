@@ -9,6 +9,7 @@ import { legacyRoute, link, pathRoute, resolvePage } from "./routes";
 import { pageMetadata } from "./seo";
 import "./style.css";
 import "./experience-v2.css";
+import "./director-preview.css";
 
 function savedLocale() {
   try {

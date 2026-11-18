@@ -7,6 +7,7 @@ import {
   type Locale,
   type LocalizedContent,
 } from "./content";
+import { FestivalTheme } from "./FestivalTheme";
 import { pages, ui } from "./copy";
 import { link, type Page } from "./routes";
 
@@ -30,13 +31,11 @@ const primary: NavItem[] = [
 const secondary: NavItem[] = [
   { label: l("About", "Chi siamo", "Über uns"), page: "festival" },
   { label: pages.archive, page: "archive" },
-  {
-    label: l("Partners", "Partner", "Partner"),
-    page: "festival",
-    anchor: "#partners",
-  },
+  { label: pages.partners, page: "partners" },
   { label: l("Visit", "Visita", "Besuch"), page: "venues" },
   { label: l("Press", "Stampa", "Presse"), page: "media" },
+  { label: pages.contact, page: "contact" },
+  { label: pages.newsletter, page: "newsletter" },
 ];
 const secondaryLabel = l(
   "Festival information",
@@ -101,6 +100,7 @@ export function Header({
       <div className="shell header-inner">
         <Brand locale={locale} />
         <div className="header-tools">
+          <FestivalTheme locale={locale} />
           <a
             className="ticket-cta"
             href={link(locale, "tickets")}

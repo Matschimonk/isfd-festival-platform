@@ -20,6 +20,10 @@ npm run preview
 
 The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
+## Director’s Preview V3
+
+The [Director’s Presentation](docs/director-preview.md) includes the walkthrough, page inventory, screenshots, demo boundaries and launch estimate. The optional Studio Lite runs on loopback through `npm run studio:v3`.
+
 ## Festival Experience V2
 
 The chapter navigation keeps Tickets visible and groups editorial pages around the programme. The film, people and archive components accept rights-approved media with credits. The [V2 review](docs/experience-v2-review.md) includes matched screenshots and the remaining media brief.
