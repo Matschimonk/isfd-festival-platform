@@ -37,6 +37,8 @@ The build checks TypeScript, compiles the browser bundle, and runs a Node-only V
 
 ## Production deployment to Hostinger
 
+See the [festival release plan](docs/hostinger-release-plan.md) for document-root evidence, backup and restoration, and the confirmed obsolete-asset shortlist.
+
 The workflow builds on pull requests and pushes to `main` using Node.js 22. The `festival-dist` artifact contains the static website. Production deployment starts only from `main` when the repository variable `FESTIVAL_DEPLOY_ENABLED` is `true`. You can also run the workflow manually on `main` after configuration.
 
 ### Verify the destination and SSH access in hPanel
