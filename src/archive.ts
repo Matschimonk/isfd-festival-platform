@@ -1,0 +1,293 @@
+import {
+  l,
+  events,
+  type Festival,
+  type FestivalRepository,
+  type Film,
+  type Screening,
+} from "./content";
+
+const experience = "https://www.italyshortfilmdays.com/en/experience";
+const lineup = "https://www.italyshortfilmdays.com/en/line";
+const schedule = "https://www.italyshortfilmdays.com/en/program";
+const press =
+  "https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html";
+const published = "published" as const;
+const film = (
+  id: string,
+  title: string,
+  directors?: string[],
+  minutes?: number,
+): Film => ({
+  id,
+  title,
+  directors,
+  minutes,
+  edition: 2026,
+  status: published,
+  source: experience,
+  links: [lineup],
+});
+
+const blocks = [
+  [
+    {
+      ...film("bellissima", "Bellissima", ["Alessandro Capitani"], 12),
+      year: 2015,
+      country: l("Italy", "Italia"),
+      synopsis: l(
+        "After being mocked at a nightclub, Veronica retreats to the bathroom. An unexpected encounter changes the course of her night.",
+        "Derisa in discoteca, Veronica si rifugia in bagno. Un incontro inatteso cambia il corso della serata.",
+      ),
+      links: ["https://www.sayonarafilm.com/project/bellissima/"],
+    },
+    film("matilde", "Il primo giorno di Matilde", ["Rosario Capozzolo"], 10),
+    film("anime-vive", "Anime vive", ["Adam Selo"], 9),
+    film("parru", "Parru pi tia", ["Giuseppe Carleo"], 14),
+    film("randaghi", "Randaghi", ["Enrico Motti", "Emanuele Motti"], 15),
+    film("piantone", "Il piantone", ["Flavia Mastrella", "Antonio Rezza"], 14),
+  ],
+  [
+    film("a-domani", "A domani", ["Emanuele Vicorito"]),
+    {
+      ...film("playing-god", "Playing God", ["Matteo Burani"], 9),
+      year: 2024,
+      country: l("Italy, France", "Italia, Francia"),
+      synopsis: l(
+        "A sculptor’s pursuit of perfection brings a clay figure to life.",
+        "La ricerca della perfezione da parte di uno scultore dà vita a una figura d’argilla.",
+      ),
+      links: ["https://sicvenezia.it/en/films/playing-god/"],
+    },
+    film("confessione", "La confessione", ["Nicola Sorcinelli"]),
+    film("niente", "Niente di speciale", ["Giovanni Conte"]),
+    film("aspis", "Aspis", ["Antonio Romagnoli"]),
+    film("fiori", "Fiori cadono", ["Ludovica Galletta"]),
+    film("teresina", "Teresina", ["Irene Belluzzi"]),
+    film("afternoon-call", "Afternoon Call", ["Maddalena Cellerino"]),
+  ],
+  [
+    film("plutone", "Plutone", ["Alessandro Padovani"]),
+    film("marcello", "Marcello", ["Maurizio Lombardi"]),
+    film("mur-du-son", "Le Mur du Son", ["Antonio La Camera"]),
+    film("quand-tu-dors", "Quand tu dors", ["Fratelli Rosa"]),
+    film("majoneze", "Majonezë", ["Giulia Grandinetti"]),
+    film("maestrale", "Maestrale", ["Nico Bonomolo"]),
+    film("fiji", "Fiji", ["Andrea La Medica"]),
+    film("fantasmi", "I fantasmi", ["Federico Papagna"]),
+  ],
+  [
+    film("pinocchio", "Pinocchio Reborn", ["Matteo Cirillo"]),
+    film("domenica", "Domenica Sera", ["Matteo Tortone"]),
+    film("tempi", "Tempi supplementari", ["Matteo Memè"]),
+    film("marina", "Marina", ["Paoli De Luca"]),
+    film("ciao-varsavia", "Ciao Varsavia", ["Diletta Di Nicolantonio"]),
+    // The official selection and the retrospective disagree on the director.
+    film("juggernaut", "Juggernaut"),
+    film("cane-gatto", "Un cane miagola un gatto abbaia", ["Alessandro Prato"]),
+    film("1799-diario", "1799, diario", ["Fulvio Risuleo"]),
+  ],
+];
+const screenings: Screening[] = [
+  {
+    id: "2026-opening",
+    date: "2026-06-04",
+    times: ["19:00", "21:30"],
+    venueId: "lichtblick",
+    title: l("Opening night", "Serata inaugurale"),
+  },
+  {
+    id: "2026-friday",
+    date: "2026-06-05",
+    times: ["18:30", "21:30"],
+    venueId: "il-kino",
+    title: l("Official screenings", "Proiezioni ufficiali"),
+  },
+  {
+    id: "2026-saturday",
+    date: "2026-06-06",
+    times: ["19:00"],
+    venueId: "acud",
+    title: l("Official screenings", "Proiezioni ufficiali"),
+  },
+  {
+    id: "2026-closing",
+    date: "2026-06-07",
+    times: ["19:00"],
+    venueId: "acud",
+    title: l("Awards night", "Serata dei premi"),
+  },
+].map((entry, i) => ({
+  ...entry,
+  edition: 2026,
+  status: published,
+  source: i === 0 ? schedule : press,
+  filmIds: blocks[i].map((f) => f.id),
+}));
+
+const festival: Festival = {
+  editions: [
+    {
+      id: "2027",
+      year: 2027,
+      label: l("June 2027 · Berlin", "Giugno 2027 · Berlino"),
+      status: published,
+    },
+    {
+      id: "2026",
+      year: 2026,
+      label: l("4–7 June 2026 · Berlin", "4–7 giugno 2026 · Berlino"),
+      starts: "2026-06-04",
+      ends: "2026-06-07",
+      status: published,
+      source: experience,
+    },
+  ],
+  films: blocks.flat(),
+  screenings,
+  events,
+  venues: [
+    {
+      id: "lichtblick",
+      name: "Lichtblick Kino",
+      edition: 2026,
+      status: published,
+      source: experience,
+      map: "https://www.google.com/maps/search/?api=1&query=Lichtblick+Kino+Berlin",
+    },
+    {
+      id: "il-kino",
+      name: "IL KINO",
+      edition: 2026,
+      status: published,
+      source: experience,
+      map: "https://www.google.com/maps/search/?api=1&query=IL+KINO+Berlin",
+    },
+    {
+      id: "acud",
+      name: "ACUD Kino",
+      edition: 2026,
+      status: published,
+      source: experience,
+      map: "https://www.google.com/maps/search/?api=1&query=ACUD+Kino+Berlin",
+    },
+  ],
+  awards: [
+    {
+      id: "film",
+      title: l("Best Film", "Miglior film"),
+      recipient: "Giulia Grandinetti",
+      filmId: "majoneze",
+    },
+    {
+      id: "director",
+      title: l("Best Director", "Miglior regia"),
+      recipient: "Paoli De Luca",
+      filmId: "marina",
+    },
+    {
+      id: "actress",
+      title: l("Best Actress", "Migliore attrice"),
+      recipient: "Carlotta Gamba",
+    },
+    {
+      id: "actor",
+      title: l("Best Actor", "Miglior attore"),
+      recipient: "Giovanni Crozza Signoris",
+    },
+    {
+      id: "audience",
+      title: l(
+        "MYmovies ONE Audience Award",
+        "Premio del pubblico MYmovies ONE",
+      ),
+      recipient: "Alessandro Capitani",
+      filmId: "bellissima",
+    },
+    {
+      id: "lifetime",
+      title: l("Lifetime Achievement Award", "Premio alla carriera"),
+      recipient: "Valentina Lodovini",
+    },
+    {
+      id: "guests",
+      title: l("Special Guest Awards", "Premi ospiti speciali"),
+      recipient: "Sara Serraiocco, Antonio Bannò",
+    },
+  ].map((a) => ({
+    ...a,
+    edition: 2026,
+    status: published,
+    source: experience,
+  })),
+  people: [
+    {
+      id: "patron",
+      name: "Valentina Lodovini",
+      role: l("2026 festival patron", "Madrina del festival 2026"),
+      status: published,
+      source: experience,
+    },
+  ],
+  partners: [
+    {
+      id: "taxidrivers",
+      name: "TaxiDrivers",
+      edition: 2026,
+      status: published,
+      url: "https://www.taxidrivers.it/italy-short-film-days",
+    },
+  ],
+  articles: [
+    {
+      id: "programme",
+      title: l(
+        "The first festival programme",
+        "Il programma della prima edizione",
+      ),
+      summary: l(
+        "TaxiDrivers on four days of screenings across three independent cinemas.",
+        "TaxiDrivers racconta quattro giorni di proiezioni in tre cinema indipendenti.",
+      ),
+      url: press,
+      kind: "press",
+      status: published,
+    },
+    {
+      id: "retrospective",
+      title: l(
+        "A look back at the first edition",
+        "Uno sguardo alla prima edizione",
+      ),
+      summary: l(
+        "The festival’s recap of screenings, guests and awards.",
+        "Il riepilogo del festival con proiezioni, ospiti e premi.",
+      ),
+      url: experience,
+      kind: "editorial",
+      status: published,
+    },
+    {
+      id: "ciao",
+      title: l(
+        "Carlotta Gamba and Ciao Varsavia",
+        "Carlotta Gamba e Ciao Varsavia",
+      ),
+      summary: l(
+        "TaxiDrivers covers the actor’s festival appearance.",
+        "TaxiDrivers racconta la partecipazione dell’attrice al festival.",
+      ),
+      url: "https://www.taxidrivers.it/533202/italy-short-film-days/carlotta-gamba-allitaly-short-film-days-berlin-con-il-corto-ciao-varsavia.html",
+      kind: "news",
+      status: published,
+    },
+  ],
+  tickets: [],
+  workshops: [],
+  podcasts: [],
+};
+export const repository: FestivalRepository = {
+  async getFestival() {
+    return festival;
+  },
+};

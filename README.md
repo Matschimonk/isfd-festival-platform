@@ -1,6 +1,6 @@
 # Italy Short Film Days Berlin 2027
 
-A bilingual React, TypeScript and Vite festival homepage. Dates, film entries, venues and programme information are preview content. Artwork is generated for the mock festival. Ticket information is display-only.
+A bilingual React, TypeScript and Vite festival homepage. The June 2027 programme is an advance outline. Exact dates, times, venues and ticketing are pending. The 2026 archive uses the official festival retrospective and the TaxiDrivers programme.
 
 ## Setup
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Select EN or IT in the header. Each collection scrolls horizontally by touch, trackpad or the arrow controls. Hover over a film or focus it with the keyboard for a synopsis. Click, tap or press Enter to open its full preview. Escape closes the preview.
+Open the local URL printed by Vite. Select EN or IT in the header, explore the seven-day programme with day and category filters, or open a film from the 2026 archive. Language is carried in the URL and remembered for new visits.
 
 ```sh
 npm run build
@@ -22,7 +22,13 @@ The build checks TypeScript and writes static assets to `dist/`. Preview serves 
 
 ## WordPress integration
 
-`src/content.ts` defines the `FestivalRepository` contract, the mock implementation and the locale model. Components consume normalised festival content without depending on WordPress response fields. To integrate later, implement `getFestival()` against a WordPress REST route and swap the repository export. Map film, collection and festival section records to the existing domain types. Keep film IDs stable across locales and use them to resolve collection membership. Support both English and Italian fields in the mapping, validate responses at the boundary, and map CMS media URLs to the film’s `stillUrl` field. Configure the API base per environment and keep any credentials server-side. Global interface translations live in `copy`. The language preference is stored in the browser.
+`src/content.ts` defines the domain models, bilingual programme outline and `FestivalRepository` contract. `src/archive.ts` implements the mock repository with separately sourced historical records. Only published records are shown publicly. A future CMS adapter should validate API responses, provide stable IDs and source links, and normalise references and translations before returning them. Global interface translations live in `src/copy.ts`.
+
+## Archive and editorial data
+
+- The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [official programme](https://www.italyshortfilmdays.com/en/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. The published sources disagree on the directing credit for Juggernaut, so that credit is omitted pending confirmation. Screening times are listed at programme-block level.
+- Remaining editorial work includes confirming 2027 dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers. Some 2026 films still need verified production metadata, translated synopses and rights-cleared artwork or trailers.
+- Build generates `seo/sitemap.xml` alongside `dist/`. The current Hostinger deployment allowlist accepts the existing layout only, so the sitemap is an unshipped artifact. Publish it separately to the verified festival root when authorised. Detail URLs use query parameters and React updates their translated metadata after load. Crawlers that skip JavaScript receive the generic homepage social preview.
 
 ## Production deployment to Hostinger
 
