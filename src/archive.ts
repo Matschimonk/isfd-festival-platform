@@ -160,7 +160,7 @@ const screenings: Screening[] = [
   filmIds: blocks[i].map((f) => f.id),
 }));
 
-const festival: Festival = {
+export const festival: Festival = {
   editions: [
     {
       id: "2027",
