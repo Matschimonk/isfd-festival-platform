@@ -294,6 +294,7 @@ const festival: Festival = {
   people: [
     {
       id: "patron",
+      edition: 2026,
       name: "Valentina Lodovini",
       role: l(
         "2026 festival patron",

@@ -10,14 +10,22 @@ import { pages } from "./copy";
 
 function siteOrigin(value: string) {
   const url = new URL(value);
-  if (url.protocol !== "https:" || url.username || url.password || url.pathname !== "/" || url.search || url.hash) {
+  if (
+    url.protocol !== "https:" ||
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  ) {
     throw new Error("VITE_SITE_ORIGIN must be a bare HTTPS origin.");
   }
   return url.origin;
 }
 
 export const origin = siteOrigin(
-  import.meta.env.VITE_SITE_ORIGIN ?? "https://italyshortfilmdays2027.rawdrivers.org",
+  import.meta.env.VITE_SITE_ORIGIN ??
+    "https://italyshortfilmdays2027.rawdrivers.org",
 );
 export type Page = keyof typeof pages;
 export type Route = { page: Page; id?: string };

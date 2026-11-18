@@ -236,6 +236,7 @@ export const experience = {
       "Ausgewählte Fotografien",
     ),
     gallery: l("Photo galleries", "Gallerie fotografiche", "Fotogalerien"),
+    clips: l("Film clips", "Estratti dei film", "Filmausschnitte"),
     aftermovie: l(
       "Festival aftermovie",
       "Video del festival",

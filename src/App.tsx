@@ -3,8 +3,6 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import {
   categories,
   days,
-  localeNames,
-  locales,
   localizedEditorialText,
   translate,
   visible,
@@ -17,8 +15,11 @@ import {
   type Screening,
 } from "./content";
 import { mediaKinds, pages, ui } from "./copy";
+import { Brand, Header } from "./Navigation";
 import {
   ArchiveFeature,
+  FilmCard,
+  PeopleStories,
   GenreExplorer,
   HomeFeatures,
   Profile,
@@ -31,22 +32,6 @@ import { link, resolvePage, type Page, type Route } from "./routes";
 
 type T = (text: LocalizedContent) => string;
 
-function Brand({ locale }: { locale: Locale }) {
-  return (
-    <a className="brand" href={link(locale)}>
-      <span className="brand-mark" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-      </span>
-      <span>
-        ITALY SHORT
-        <br />
-        FILM DAYS <b>BERLIN</b>
-      </span>
-    </a>
-  );
-}
 function Panel({
   id,
   title,
@@ -82,14 +67,7 @@ function FilmList({ films, locale }: { films: Film[]; locale: Locale }) {
     <ul className="card-grid film-grid">
       {films.filter(visible).map((film) => (
         <li key={film.id}>
-          <a className="tile" href={link(locale, "films", film.id)}>
-            {film.poster && <img src={film.poster} alt="" loading="lazy" />}
-            <span>
-              <strong>{film.title}</strong>
-              {film.directors && <small>{film.directors.join(", ")}</small>}
-            </span>
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
+          <FilmCard film={film} locale={locale} />
         </li>
       ))}
     </ul>
@@ -488,16 +466,18 @@ function Media({
   );
 }
 function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
+  const [first, second] = t(ui.headline).split(/(?<=\.)\s+/);
   return (
     <>
-      <section className="hero">
+      <section className="hero experience-hero">
         <div className="shell hero-inner">
           <div className="eyebrow">
             <span />
             {t(ui.date)}
           </div>
-          <h1>{t(ui.headline)}</h1>
-          <p>{t(ui.intro)}</p>
+          <h1>
+            <span>{first}</span> <span>{second}</span>
+          </h1>
           <div className="hero-actions">
             <a className="primary" href={link(locale, "programme")}>
               {t(pages.programme)}
@@ -530,7 +510,6 @@ export function App({
   route: Route | null;
   locale: Locale;
 }) {
-  const [menu, setMenu] = useState(false);
   const t: T = (text) => translate(text, locale);
   const { page, id, film, event, venue, article, missing } = resolvePage(
     data,
@@ -595,6 +574,12 @@ export function App({
             <Panel title={t(ui.selection)}>
               <p>{t(ui.coming)}</p>
             </Panel>
+            <p>
+              <a className="editorial-link" href={link(locale, "programme")}>
+                {t(pages.programme)}{" "}
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </a>
+            </p>
             <GenreExplorer data={data} locale={locale} />
             <section>
               <h2>{t(ui.lineup)}</h2>
@@ -609,6 +594,7 @@ export function App({
       case "academy":
         body = (
           <>
+            <PeopleStories data={data} locale={locale} />
             <TalksAndSchools data={data} locale={locale} />
             <p>{t(ui.outline)}</p>
             <ul className="card-grid">
@@ -712,7 +698,7 @@ export function App({
                   <Profile key={p.id} person={p} locale={locale} />
                 ))}
               </Panel>
-              <Panel title={t(ui.partners)}>
+              <Panel title={t(ui.partners)} id="partners">
                 {data.partners.filter(visible).map((p) => (
                   <p key={p.id}>
                     {p.url ? (
@@ -803,48 +789,7 @@ export function App({
       <a className="skip-link" href="#content">
         {t(ui.skip)}
       </a>
-      <header className="header">
-        <div className="shell header-inner">
-          <Brand locale={locale} />
-          <button
-            className="menu-toggle"
-            type="button"
-            aria-expanded={menu}
-            aria-controls="main-nav"
-            onClick={() => setMenu(!menu)}
-          >
-            {t(ui.menu)}
-          </button>
-          <nav
-            id="main-nav"
-            className={menu ? "nav-open" : ""}
-            aria-label={t(ui.nav)}
-          >
-            {(Object.keys(pages) as Page[]).map((key) => (
-              <a
-                key={key}
-                aria-current={page === key && !missing ? "page" : undefined}
-                href={link(locale, key)}
-              >
-                {t(pages[key])}
-              </a>
-            ))}
-          </nav>
-          <div className="languages" role="group" aria-label={t(ui.language)}>
-            {locales.map((lang) => (
-              <a
-                key={lang}
-                href={missing ? link(lang) : link(lang, page, id)}
-                lang={lang}
-                aria-label={localeNames[lang]}
-                aria-current={locale === lang ? "true" : undefined}
-              >
-                {lang.toUpperCase()}
-              </a>
-            ))}
-          </div>
-        </div>
-      </header>
+      <Header locale={locale} page={page} id={id} missing={missing} />
       <main id="content" tabIndex={-1}>
         {page === "home" && !missing ? (
           <Home data={data} locale={locale} t={t} />
