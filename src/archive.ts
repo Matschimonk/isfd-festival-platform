@@ -7,6 +7,8 @@ import {
   type Screening,
 } from "./content";
 
+import { socialHighlights } from "./experience-content";
+
 const experience = "https://www.italyshortfilmdays.com/en/experience";
 const lineup = "https://www.italyshortfilmdays.com/en/line";
 const schedule = "https://www.italyshortfilmdays.com/it/program";
@@ -186,7 +188,26 @@ const festival: Festival = {
   ],
   films: blocks.flat(),
   screenings,
-  events,
+  events: [
+    ...events.map((event) => {
+      const highlight = socialHighlights.find((item) => item.id === event.id);
+      return highlight
+        ? {
+            ...event,
+            title: highlight.title,
+            description: highlight.description,
+          }
+        : event;
+    }),
+    ...socialHighlights
+      .filter((item) => item.id === "taxidrivers-exhibition")
+      .map((item) => ({
+        ...item,
+        edition: 2027,
+        status: "published" as const,
+        category: "exhibitions" as const,
+      })),
+  ],
   venues: [
     {
       id: "lichtblick",
