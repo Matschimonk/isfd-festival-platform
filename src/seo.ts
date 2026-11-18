@@ -13,6 +13,7 @@ import {
   type Venue,
 } from "./content";
 import { pages, ui } from "./copy";
+import { journalCopy } from "./journal-content";
 import { link, origin, resolvePage, type Route } from "./routes";
 
 const brand = "Italy Short Film Days Berlin";
@@ -23,6 +24,7 @@ const artworkAlt = l(
 );
 const publisher = { "@id": origin + "/#festival-organisation" };
 const descriptions = {
+  journal: journalCopy.intro,
   partners: pages.partners,
   contact: pages.contact,
   newsletter: pages.newsletter,
@@ -65,13 +67,18 @@ export function pageMetadata(
   route: Route | null,
   locale: Locale,
 ) {
-  const { page, id, film, event, venue, article, missing } = resolvePage(
+  const { page, id, film, event, venue, article, story, missing } = resolvePage(
     data,
     route,
   );
   const t = (value: Record<Locale, string>) => translate(value, locale);
   const canonical = origin + link(locale, page, id);
-  let title = page === "home" ? t(ui.headline) : t(pages[page]);
+  let title =
+    page === "home"
+      ? t(ui.headline)
+      : page === "journal"
+        ? t(journalCopy.metaTitle)
+        : t(pages[page]);
   let description = t(descriptions[page]);
 
   if (film) {
@@ -101,12 +108,26 @@ export function pageMetadata(
   } else if (venue) {
     title = `${venue.name} · ${t(pages.venues)}`;
     description = `${venue.name} · ${t(ui.city)} · ${t(pages.archive)} ${venue.edition}`;
+  } else if (story) {
+    title = t(story.title);
+    description = t(story.subtitle);
   } else if (article) {
     title = t(article.title);
     description = t(article.summary);
   }
   if (missing) title = description = t(ui.notFound);
-  return { title: `${title} | ${brand}`, description, canonical, missing };
+  const robots = missing
+    ? "noindex"
+    : story?.demo && indexPolicy === "index,follow"
+      ? "noindex,follow"
+      : indexPolicy;
+  return {
+    title: `${title} | ${brand}`,
+    description,
+    canonical,
+    missing,
+    robots,
+  };
 }
 
 function venueSchema(venue: Venue, locale: Locale) {
@@ -134,7 +155,7 @@ function filmSchema(film: Film, locale: Locale) {
 }
 
 export function structuredData(data: Festival, route: Route, locale: Locale) {
-  const { page, film, venue } = resolvePage(data, route);
+  const { page, film, venue, story } = resolvePage(data, route);
   const { title, canonical, description } = pageMetadata(data, route, locale);
   const archiveUrl = origin + link(locale, "archive");
   const organisation = {
@@ -147,6 +168,16 @@ export function structuredData(data: Festival, route: Route, locale: Locale) {
 
   if (film) mainEntity = filmSchema(film, locale);
   if (venue) mainEntity = venueSchema(venue, locale);
+  if (story && !story.demo)
+    mainEntity = {
+      "@type": "Article",
+      headline: story.title[locale],
+      description: story.subtitle[locale],
+      datePublished: story.date,
+      author: { "@type": "Person", name: story.author[locale] },
+      publisher,
+      inLanguage: locale,
+    };
   if (page === "archive") {
     const edition = data.editions.find(
       (item) => item.year === 2026 && visible(item),
@@ -228,15 +259,26 @@ export function escapeMarkup(value: string) {
     .replaceAll("'", "&#39;");
 }
 
-export const indexPolicy =
+const indexPolicy =
   import.meta.env.VITE_PRESENTATION_PREVIEW === "1"
     ? "noindex,nofollow"
     : "index,follow";
 
 export function renderHead(data: Festival, route: Route, locale: Locale) {
-  const { title, description, canonical } = pageMetadata(data, route, locale);
+  const { title, description, canonical, robots } = pageMetadata(
+    data,
+    route,
+    locale,
+  );
   const esc = escapeMarkup;
-  const image = origin + "/images/hero.webp";
+  const hero = resolvePage(data, route).story?.hero;
+  const approvedHero = hero?.rights === "approved" ? hero : undefined;
+  const image = esc(
+    new URL(approvedHero?.src ?? "/images/hero.webp", origin).href,
+  );
+  const width = approvedHero ? approvedHero.width : 2100;
+  const height = approvedHero ? approvedHero.height : 700;
+  const imageAlt = esc((approvedHero?.alt ?? artworkAlt)[locale]);
   const jsonLd = JSON.stringify(structuredData(data, route, locale)).replaceAll(
     "<",
     "\\u003c",
@@ -244,7 +286,7 @@ export function renderHead(data: Festival, route: Route, locale: Locale) {
   return [
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}" />`,
-    `<meta name="robots" content="${indexPolicy}" />`,
+    `<meta name="robots" content="${robots}" />`,
     `<link rel="canonical" href="${esc(canonical)}" />`,
     ...alternates(route).map(
       ({ locale: lang, url }) =>
@@ -262,15 +304,19 @@ export function renderHead(data: Festival, route: Route, locale: Locale) {
           `<meta property="og:locale:alternate" content="${openGraphLocales[lang]}" />`,
       ),
     `<meta property="og:image" content="${image}" />`,
-    '<meta property="og:image:type" content="image/webp" />',
-    '<meta property="og:image:width" content="2100" />',
-    '<meta property="og:image:height" content="700" />',
-    `<meta property="og:image:alt" content="${esc(artworkAlt[locale])}" />`,
+    ...(!approvedHero
+      ? ['<meta property="og:image:type" content="image/webp" />']
+      : []),
+    ...(width ? [`<meta property="og:image:width" content="${width}" />`] : []),
+    ...(height
+      ? [`<meta property="og:image:height" content="${height}" />`]
+      : []),
+    `<meta property="og:image:alt" content="${imageAlt}" />`,
     '<meta name="twitter:card" content="summary_large_image" />',
     `<meta name="twitter:title" content="${esc(title)}" />`,
     `<meta name="twitter:description" content="${esc(description)}" />`,
     `<meta name="twitter:image" content="${image}" />`,
-    `<meta name="twitter:image:alt" content="${esc(artworkAlt[locale])}" />`,
+    `<meta name="twitter:image:alt" content="${imageAlt}" />`,
     `<script id="structured-data" type="application/ld+json">${jsonLd}</script>`,
   ].join("\n    ");
 }

@@ -78,6 +78,9 @@ export function publishedRoutes(data: Festival): Route[] {
     ...data.articles
       .filter(visible)
       .map(({ id }) => ({ page: "media" as const, id })),
+    ...(data.journal ?? [])
+      .filter(visible)
+      .map(({ id }) => ({ page: "journal" as const, id })),
   ];
   const seen = new Set<string>();
   for (const { page, id } of routes) {
@@ -99,6 +102,8 @@ export function resolvePage(data: Festival, route: Route | null) {
   const event = id && page === "programme" ? published(data.events) : undefined;
   const venue = id && page === "venues" ? published(data.venues) : undefined;
   const article = id && page === "media" ? published(data.articles) : undefined;
+  const story =
+    id && page === "journal" ? published(data.journal ?? []) : undefined;
   return {
     page,
     id,
@@ -106,6 +111,8 @@ export function resolvePage(data: Festival, route: Route | null) {
     event,
     venue,
     article,
-    missing: !route || Boolean(id && !film && !event && !venue && !article),
+    story,
+    missing:
+      !route || Boolean(id && !film && !event && !venue && !article && !story),
   };
 }

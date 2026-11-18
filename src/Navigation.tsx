@@ -18,6 +18,7 @@ const primary: NavItem[] = [
     label: l("Films & Events", "Film ed eventi", "Filme & Events"),
     page: "films",
   },
+  { label: pages.programme, page: "programme" },
   {
     label: l("People & Stories", "Persone e storie", "Menschen & Geschichten"),
     page: "academy",
@@ -31,6 +32,7 @@ const primary: NavItem[] = [
 const secondary: NavItem[] = [
   { label: l("About", "Chi siamo", "Über uns"), page: "festival" },
   { label: pages.archive, page: "archive" },
+  { label: pages.journal, page: "journal" },
   { label: pages.partners, page: "partners" },
   { label: l("Visit", "Visita", "Besuch"), page: "venues" },
   { label: l("Press", "Stampa", "Presse"), page: "media" },

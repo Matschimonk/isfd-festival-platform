@@ -45,6 +45,8 @@ The homepage leads into the seven-day overview, genre explorer, timeline, Academ
 
 For the Director’s rehearsal, see the [private browser preview instructions](docs/presentation-preview.md) and [presentation deck](docs/isfd-director-presentation.pdf). Timetable records remain concepts unless an editor sets `confirmation: "confirmed"` and supplies a source. Venue filters additionally require a published, sourced venue from the same edition. Genre filters require a linked, same-edition published film with reviewed `verifiedGenres`. Keep tentative times blank until they can be labelled appropriately. My Festival stores only event IDs in the visitor’s browser.
 
+The [Experience V4 review guide](docs/experience-v4.md) covers the film discovery rail, journal routes, preview screenshots and editorial permissions.
+
 ## Canonical site origin
 
 Set `VITE_SITE_ORIGIN` at build time to a bare HTTPS origin. The default is the current festival sandbox. Vite uses the same public value for both the browser bundle and the prerender command, so canonicals, alternate links, sharing metadata, JSON-LD and the sitemap use the same origin. Navigation and asset URLs remain relative to the site root. A local migration test can use `VITE_SITE_ORIGIN=https://www.italyshortfilmdays.com npm run build`. The deployed domain and production workflow are managed separately.

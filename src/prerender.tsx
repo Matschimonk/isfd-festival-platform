@@ -4,7 +4,13 @@ import { renderToString } from "react-dom/server";
 import { App } from "./App";
 import { repository } from "./archive";
 import { defaultLocale, locales, type Locale } from "./content";
-import { link, origin, publishedRoutes, type Route } from "./routes";
+import {
+  link,
+  origin,
+  publishedRoutes,
+  resolvePage,
+  type Route,
+} from "./routes";
 import { alternates, escapeMarkup, renderHead } from "./seo";
 
 const output = "dist";
@@ -33,6 +39,7 @@ async function writePage(route: Route, locale: Locale, filename: string) {
 
 const entries: string[] = [];
 for (const route of routes) {
+  const inSitemap = !resolvePage(data, route).story?.demo;
   const links = alternates(route)
     .map(
       ({ locale, url }) =>
@@ -46,9 +53,10 @@ for (const route of routes) {
       locale,
       join(output, pathname.slice(1), "index.html"),
     );
-    entries.push(
-      `  <url><loc>${escapeMarkup(origin + pathname)}</loc>${links}</url>`,
-    );
+    if (inSitemap)
+      entries.push(
+        `  <url><loc>${escapeMarkup(origin + pathname)}</loc>${links}</url>`,
+      );
   }
 }
 // The root serves the English homepage and declares /en/ as its canonical URL.
@@ -58,5 +66,5 @@ await writeFile(
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${entries.join("\n")}\n</urlset>\n`,
 );
 console.log(
-  `Prerendered ${entries.length} canonical pages and the root homepage. Wrote dist/sitemap.xml.`,
+  `Prerendered ${routes.length * locales.length} canonical pages and the root homepage. Wrote ${entries.length} URLs to dist/sitemap.xml.`,
 );

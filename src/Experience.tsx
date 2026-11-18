@@ -31,6 +31,7 @@ import {
   socialHighlights,
 } from "./experience-content";
 import { pages, ui } from "./copy";
+import { EditorialPicture } from "./EditorialPicture";
 import { link } from "./routes";
 
 type Props = { data: Festival; locale: Locale };
@@ -112,7 +113,11 @@ export function FilmCard({ film, locale }: { film: Film; locale: Locale }) {
       <a className="film-card-link" href={link(locale, "films", film.id)}>
         <div className="film-visual">
           {poster ? (
-            <img src={poster.src} alt={poster.alt[locale]} loading="lazy" />
+            <EditorialPicture
+              image={poster}
+              locale={locale}
+              sizes="(max-width: 640px) 92vw, 340px"
+            />
           ) : (
             <span className="film-geometry" aria-hidden="true">
               <Clapperboard size={20} />

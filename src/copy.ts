@@ -10,6 +10,7 @@ export const pages = {
     "Akademie und Gespräche",
   ),
   media: l("Media Hub", "Multimedia", "Mediathek"),
+  journal: l("Journal", "Magazine", "Journal"),
   venues: l("Venues", "Sedi", "Spielorte"),
   tickets: l("Tickets", "Biglietti", "Tickets"),
   festival: l("Festival", "Festival", "Festival"),
