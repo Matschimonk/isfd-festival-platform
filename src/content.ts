@@ -179,27 +179,6 @@ export const days = [
   l("Saturday", "Sabato", "Samstag"),
   l("Sunday", "Domenica", "Sonntag"),
 ];
-export const themes = [
-  l("Press & Opening Day", "Stampa e apertura", "Presse und Festivaleröffnung"),
-  l(
-    "Schools & Young Audiences",
-    "Scuole e giovani spettatori",
-    "Schulen und junges Publikum",
-  ),
-  l(
-    "Industry & Conversations",
-    "Industria e conversazioni",
-    "Filmbranche und Gespräche",
-  ),
-  l("Official Screenings", "Proiezioni ufficiali", "Offizielle Vorführungen"),
-  l("Official Screenings", "Proiezioni ufficiali", "Offizielle Vorführungen"),
-  l(
-    "Screenings & Afterparty",
-    "Proiezioni e festa",
-    "Vorführungen und Abschlussparty",
-  ),
-  l("Soft Landing Brunch", "Brunch di chiusura", "Brunch zum Ausklang"),
-];
 export const categories: Record<Category, LocalizedContent> = {
   press: l("Press", "Stampa", "Presse"),
   education: l("Education", "Formazione", "Filmbildung"),

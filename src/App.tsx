@@ -6,7 +6,6 @@ import {
   localeNames,
   locales,
   localizedEditorialText,
-  themes,
   translate,
   visible,
   type Category,
@@ -18,6 +17,15 @@ import {
   type Screening,
 } from "./content";
 import { mediaKinds, pages, ui } from "./copy";
+import {
+  ArchiveFeature,
+  GenreExplorer,
+  HomeFeatures,
+  Profile,
+  SocialProgramme,
+  TalksAndSchools,
+} from "./Experience";
+import { experience, festivalWeek } from "./experience-content";
 
 import { link, resolvePage, type Page, type Route } from "./routes";
 
@@ -157,12 +165,14 @@ function Programme({
 }) {
   const [day, setDay] = useState<number | "all">("all");
   const [category, setCategory] = useState<Category | "all">("all");
+  const [period, setPeriod] = useState<"both" | "day" | "night">("both");
   const selected = data.events.filter(
     (event) =>
       visible(event) &&
       event.edition === 2027 &&
       (day === "all" || day === event.day) &&
-      (category === "all" || category === event.category),
+      (category === "all" || category === event.category) &&
+      (period === "both" || !event.period || period === event.period),
   );
   return (
     <>
@@ -201,16 +211,38 @@ function Programme({
           </select>
         </label>
       </div>
-      <div className="schedule" aria-live="polite">
+      <div
+        className="period-switch editorial-filters"
+        role="group"
+        aria-label={t(experience.rhythm)}
+      >
+        {(["both", "day", "night"] as const).map((option) => (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={period === option}
+            onClick={() => setPeriod(option)}
+          >
+            {t(experience[option])}
+          </button>
+        ))}
+      </div>
+      <p className="timeline-help">{t(experience.rhythmHelp)}</p>
+      <div
+        className="schedule editorial-timeline"
+        data-period={period}
+        aria-live="polite"
+      >
         {selected.length === 0 && <p>{t(ui.empty)}</p>}
         {days.map((value, i) => {
           const items = selected.filter((event) => event.day === i);
           return (
             items.length > 0 && (
-              <section className="schedule-day" key={i}>
+              <section className="schedule-day" key={i} id={`day-${i}`}>
                 <div>
                   <div className="eyebrow">{t(value)}</div>
-                  <h2>{t(themes[i])}</h2>
+                  <h2>{t(festivalWeek[i].title)}</h2>
+                  <p>{t(festivalWeek[i].line)}</p>
                 </div>
                 <ul>
                   {items.map((event) => (
@@ -230,6 +262,7 @@ function Programme({
                                     event.period === "day" ? "daytime" : "night"
                                   ],
                                 )}
+                            {" · " + (event.time ?? t(experience.unscheduled))}
                           </small>
                         </span>
                         <ArrowRight size={17} aria-hidden="true" />
@@ -242,6 +275,7 @@ function Programme({
           );
         })}
       </div>
+      <SocialProgramme locale={locale} />
     </>
   );
 }
@@ -274,6 +308,9 @@ function EventDetails({
           .filter(Boolean)
           .join(" · ") || t(ui.outline)}
       </p>
+      {event.edition === 2027 && (
+        <p className="eyebrow">{t(experience.proposed)}</p>
+      )}
       {event.description && <p>{t(event.description)}</p>}
       {venue && (
         <p>
@@ -475,18 +512,7 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
         </div>
       </section>
       <div className="shell page-body">
-        <section aria-labelledby="week">
-          <div className="eyebrow">{t(ui.edition)}</div>
-          <h2 id="week">{t(ui.week)}</h2>
-          <ol className="week-grid">
-            {days.map((value, i) => (
-              <li key={i}>
-                <small>{t(value)}</small>
-                <strong>{t(themes[i])}</strong>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <HomeFeatures data={data} locale={locale} />
         <section aria-labelledby="home-media">
           <h2 id="home-media">{t(pages.media)}</h2>
           <Media data={data} locale={locale} t={t} featured />
@@ -516,7 +542,11 @@ export function App({
       (event && t(event.title)) ??
       venue?.name ??
       (article && t(article.title)) ??
-      (page === "home" ? t(ui.headline) : t(pages[page])));
+      (page === "home"
+        ? t(ui.headline)
+        : page === "archive"
+          ? t(experience.archiveTitle)
+          : t(pages[page])));
   let body: ReactNode;
   if (missing)
     body = (
@@ -565,6 +595,7 @@ export function App({
             <Panel title={t(ui.selection)}>
               <p>{t(ui.coming)}</p>
             </Panel>
+            <GenreExplorer data={data} locale={locale} />
             <section>
               <h2>{t(ui.lineup)}</h2>
               <FilmList
@@ -578,6 +609,7 @@ export function App({
       case "academy":
         body = (
           <>
+            <TalksAndSchools data={data} locale={locale} />
             <p>{t(ui.outline)}</p>
             <ul className="card-grid">
               {data.events
@@ -585,7 +617,15 @@ export function App({
                   (e) =>
                     visible(e) &&
                     e.edition === 2027 &&
-                    (e.category === "education" || e.category === "industry"),
+                    (
+                      [
+                        "education",
+                        "industry",
+                        "talks",
+                        "workshops",
+                        "schools",
+                      ] as Category[]
+                    ).includes(e.category),
                 )
                 .map((e) => (
                   <li key={e.id}>
@@ -613,7 +653,10 @@ export function App({
       case "venues":
         body = (
           <>
-            <p>{t(ui.venuePending)}</p>
+            <section className="map-preview panel" id="festival-map">
+              <h2>{t(experience.map)}</h2>
+              <p>{t(experience.mapIntro)}</p>
+            </section>
             <h2>{t(ui.historical)}</h2>
             <ul className="card-grid">
               {data.venues.filter(visible).map((v) => (
@@ -653,14 +696,20 @@ export function App({
         body = (
           <>
             <p>{t(ui.mission)}</p>
+            <section id="guests">
+              <h2>{t(experience.guests)}</h2>
+              <p>{t(experience.guestPending)}</p>
+              <ul className="editorial-topics">
+                {experience.guestRoles.map((role) => (
+                  <li key={role.en}>{t(role)}</li>
+                ))}
+              </ul>
+            </section>
             <div className="card-grid">
               <Panel title={t(ui.people)}>
                 <p>{t(ui.dates)}</p>
                 {data.people.filter(visible).map((p) => (
-                  <p key={p.id}>
-                    {p.name}
-                    {p.role && " · " + t(p.role)}
-                  </p>
+                  <Profile key={p.id} person={p} locale={locale} />
                 ))}
               </Panel>
               <Panel title={t(ui.partners)}>
@@ -690,12 +739,13 @@ export function App({
         );
         body = (
           <>
+            <ArchiveFeature data={data} locale={locale} />
             {edition && (
               <div className="eyebrow" id="2026">
                 {t(edition.label)}
               </div>
             )}
-            <section>
+            <section id="archive-screenings">
               <h2>{t(ui.screening)}</h2>
               <ScreeningList
                 screenings={data.screenings.filter(
@@ -706,7 +756,7 @@ export function App({
                 t={t}
               />
             </section>
-            <section>
+            <section id="archive-awards">
               <h2>{t(ui.award)}</h2>
               <ul className="card-grid">
                 {data.awards
@@ -731,6 +781,10 @@ export function App({
                     );
                   })}
               </ul>
+            </section>
+            <section id="archive-press">
+              <h2>{t(experience.archiveKinds.press)}</h2>
+              <Media data={data} locale={locale} t={t} />
             </section>
             <section>
               <h2>{t(ui.lineup)}</h2>

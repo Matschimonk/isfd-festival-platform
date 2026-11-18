@@ -20,6 +20,12 @@ npm run preview
 
 The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
+## Festival Experience V1
+
+The homepage leads into the seven-day overview, genre explorer, timeline, Academy, festival map preview and 2026 retrospective. Day and night filters keep programme entries visible when they have no assigned period. The genre explorer only uses `Film.verifiedGenres`; the archive currently has no approved discovery tags. The archive gallery renders only published 2026 records with approved rights. The current repository has no approved retrospective photos or videos, so the public section displays localized empty states and links to verified coverage, screenings and awards.
+
+`src/experience-content.ts` holds the provisional programme and trilingual editorial copy. The repository interfaces accept archive media metadata, verified genres, people, podcast episodes, venue links and ticket offers. Keep new entries unpublished until their editorial or rights status is verified. The branch uses the existing prerendering and canonical configuration.
+
 ## WordPress integration
 
 `src/content.ts` defines the domain models, trilingual programme outline and `FestivalRepository` contract. `src/archive.ts` implements the mock repository with separately sourced historical records. Only published records are shown publicly. A future CMS adapter should validate API responses, provide stable IDs and source links, and normalise references and translations before returning them. Global interface translations live in `src/copy.ts`. Required localized fields need Italian, German and English. Optional historical synopses can be partial. Supply a synopsis only after editorial review for that language. Where the requested translation is unavailable, the site shows a localized availability notice. Film titles, names, and original-language material retain their original wording. The URL language takes priority over the saved preference, and English is the default for first visits.

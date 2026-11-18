@@ -90,8 +90,11 @@ export function pageMetadata(
     description = [
       title,
       t(categories[event.category]),
-      event.description ? t(event.description) : t(ui.outline),
-    ].join(" · ");
+      event.edition === 2027 ? t(ui.outline) : undefined,
+      event.description ? t(event.description) : undefined,
+    ]
+      .filter(Boolean)
+      .join(" · ");
   } else if (venue) {
     title = `${venue.name} · ${t(pages.venues)}`;
     description = `${venue.name} · ${t(ui.city)} · ${t(pages.archive)} ${venue.edition}`;
