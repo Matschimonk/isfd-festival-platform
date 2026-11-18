@@ -1,6 +1,6 @@
 # Italy Short Film Days Berlin 2027
 
-A bilingual React, TypeScript and Vite festival homepage. Dates, film entries, venues and programme information are preview content. Artwork is generated for the mock festival. Ticket information is display-only.
+A trilingual React, TypeScript and Vite festival homepage. The June 2027 programme is an advance outline. Exact dates, times, venues and ticketing are pending. The 2026 archive uses the official festival retrospective and the TaxiDrivers programme.
 
 ## Setup
 
@@ -11,20 +11,33 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Select EN or IT in the header. Each collection scrolls horizontally by touch, trackpad or the arrow controls. Hover over a film or focus it with the keyboard for a synopsis. Click, tap or press Enter to open its full preview. Escape closes the preview.
+Open the local URL printed by Vite. Select IT, DE or EN in the header, explore the seven-day programme with day and category filters, or open a film from the 2026 archive. Language is carried in the URL and remembered for new visits.
 
 ```sh
 npm run build
 npm run preview
 ```
 
-The build checks TypeScript and writes static assets to `dist/`. Preview serves that directory locally.
+The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
 ## WordPress integration
 
-`src/content.ts` defines the `FestivalRepository` contract, the mock implementation and the locale model. Components consume normalised festival content without depending on WordPress response fields. To integrate later, implement `getFestival()` against a WordPress REST route and swap the repository export. Map film, collection and festival section records to the existing domain types. Keep film IDs stable across locales and use them to resolve collection membership. Support both English and Italian fields in the mapping, validate responses at the boundary, and map CMS media URLs to the film’s `stillUrl` field. Configure the API base per environment and keep any credentials server-side. Global interface translations live in `copy`. The language preference is stored in the browser.
+`src/content.ts` defines the domain models, trilingual programme outline and `FestivalRepository` contract. `src/archive.ts` implements the mock repository with separately sourced historical records. Only published records are shown publicly. A future CMS adapter should validate API responses, provide stable IDs and source links, and normalise references and translations before returning them. Global interface translations live in `src/copy.ts`. Required localized fields need Italian, German and English. Optional historical synopses can be partial. Supply a synopsis only after editorial review for that language. Where the requested translation is unavailable, the site shows a localized availability notice. Film titles, names, and original-language material retain their original wording. The URL language takes priority over the saved preference, and English is the default for first visits.
+
+## Archive and editorial data
+
+- The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [Italian screening programme](https://www.italyshortfilmdays.com/it/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. Screening times are listed at programme-block level.
+- The [pre-merge review](docs/pre-merge-review.md) records the resolved 2026 credits, outstanding editorial questions and production release checks. Remaining 2027 work includes confirming exact dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers.
+
+## Static routes and SEO
+
+- The published URLs start with `/it/`, `/de/`, or `/en/`. Details use paths such as `/de/films/bellissima/` and `/it/programme/thu-night/`. Keep the trailing slash when sharing links. Each URL is backed by its own `index.html`, and the browser hydrates that page to enable navigation controls and filters.
+- The root serves the English homepage in static HTML and declares `/en/` as canonical. Previously shared query links such as `/?page=films&id=bellissima&lang=de` redirect in the browser, with the topic, language, fragment and other parameters preserved. Crawlers without JavaScript should use the canonical paths. A first visit to the root in a browser uses the saved preference when available.
+- The sitemap lives at `/sitemap.xml` after publishing and lists canonical URLs with reciprocal language alternates. Published 2027 programme previews have descriptive metadata. Structured event data is limited to the sourced 2026 archive and its screening blocks, whose schema uses dates at block level. Social previews use the existing generic festival artwork, while film and editorial pages have their own titles and descriptions.
 
 ## Production deployment to Hostinger
+
+See the [festival release plan](docs/hostinger-release-plan.md) for document-root evidence, backup and restoration, and the confirmed obsolete-asset shortlist.
 
 The workflow builds on pull requests and pushes to `main` using Node.js 22. The `festival-dist` artifact contains the static website. Production deployment starts only from `main` when the repository variable `FESTIVAL_DEPLOY_ENABLED` is `true`. You can also run the workflow manually on `main` after configuration.
 
@@ -63,4 +76,4 @@ After verifying the above and merging the workflow, open **Settings → Secrets 
 
 ### Published files and verification
 
-Vite uses the root base path `/`. The deployment uploads the build's `index.html`, `assets/`, and `images/`, with `index.html` installed last. The target directories should be dedicated to festival build assets. There is no directory synchronisation or cleanup of older assets. Source, dependencies, and Git metadata are excluded from the build upload. The workflow compares the HTTPS response at `/` and each published asset with the build to detect a stale cache, missing files, or a wrong directory index. If that check fails, inspect the festival's directory index and cache settings and rerun from `main` once corrected. The deploy does not change DNS or the parent site.
+Vite uses the root base path `/`. The deployment uploads the build’s assets, images, language-prefixed HTML, `sitemap.xml`, and root `index.html`. It installs the root page last. The `it/`, `de/`, and `en/` directories should be dedicated to festival pages. Hostinger must serve each directory’s `index.html` for its trailing-slash URL. No rewrite rules are required. The uploader keeps previously published files. Removing a route from the source removes it from the new build and sitemap, while its old file requires separate removal from Hostinger. Source, dependencies, and Git metadata are excluded from the build upload. The workflow compares the HTTPS response at `/`, each language route, the sitemap, and each published asset with the build to detect a stale cache, missing files, or a wrong directory index. If that check fails, inspect the festival's directory index and cache settings and rerun from `main` once corrected. The deploy does not change DNS or the parent site.

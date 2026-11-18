@@ -21,16 +21,28 @@ pending=
 trap 'if [[ -n $pending ]]; then rm -f -- "$pending"; fi; rm -rf -- "$stage"' EXIT
 tar -xzf - -C "$stage"
 
-for dir in assets images; do
-  [[ ! -L $dir && ( ! -e $dir || -d $dir ) ]] || fail "Invalid publish directory: $dir"
+for dir in assets images it de en; do
+  [[ -d $stage/$dir && ! -L $stage/$dir ]] || fail "Invalid staged directory: $dir"
 done
 
 shopt -s nullglob
-files=("$stage"/assets/* "$stage"/images/* "$stage"/index.html)
+files=("$stage"/assets/* "$stage"/images/*)
+while IFS= read -r -d '' file; do
+  files+=("$file")
+done < <(find "$stage/it" "$stage/de" "$stage/en" -type f -print0)
+files+=("$stage/sitemap.xml" "$stage/index.html")
+
+# Check every destination and its parent directories before writing any file.
 for file in "${files[@]}"; do
   dest=${file#"$stage/"}
   [[ -f $file && ! -L $file && ! -L $dest && ( ! -e $dest || -f $dest ) ]] ||
     fail "Invalid publish file: $dest"
+  dir=$dest
+  while [[ $dir == */* ]]; do
+    dir=${dir%/*}
+    [[ ! -L $stage/$dir && ! -L $dir && ( ! -e $dir || -d $dir ) ]] ||
+      fail "Invalid publish directory: $dir"
+  done
 done
 
 backup=
@@ -44,12 +56,14 @@ if [[ -e default.php || -L default.php ]]; then
   chmod 600 "$backup/default.php"
 fi
 
-for dir in assets images; do
-  if [[ ! -d $dir ]]; then mkdir -m 755 -- "$dir"; fi
-done
 for file in "${files[@]}"; do
   dest=${file#"$stage/"}
-  pending=$(mktemp "$(dirname -- "$dest")/.isfd-publish.XXXXXXXX")
+  dir=.
+  if [[ $dest == */* ]]; then
+    dir=${dest%/*}
+    (umask 022; mkdir -p -- "$dir")
+  fi
+  pending=$(mktemp "$dir/.isfd-publish.XXXXXXXX")
   install -m 0644 -- "$file" "$pending"
   mv -fT -- "$pending" "$dest"
   pending=

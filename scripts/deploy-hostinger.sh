@@ -17,10 +17,16 @@ done
 [[ $root =~ ^(/[A-Za-z0-9_.-]+)+$ && $root != */../* && $root != */./* && $root != */.. && $root != */. ]] || fail 'Use the canonical, absolute SSH document root.'
 [[ $marker =~ ^isfd-2027-[a-f0-9]{32}$ ]] || fail 'Set the festival marker to isfd-2027- plus 32 lowercase hex characters.'
 [[ -z $placeholder_hash || $placeholder_hash =~ ^[a-f0-9]{64}$ ]] || fail 'Invalid default.php SHA-256.'
-[[ -s dist/index.html && -d dist/assets && -d dist/images ]] || fail 'Incomplete Vite build.'
+[[ -s dist/index.html && -s dist/sitemap.xml && -d dist/assets && -d dist/images ]] || fail 'Incomplete Vite build.'
 [[ -z $(find dist ! -type d ! -type f -print -quit) ]] || fail 'Unexpected file type in dist.'
+for locale in it de en; do
+  [[ -s dist/$locale/index.html ]] || fail "Missing homepage for $locale"
+done
+route_file='^dist/(it|de|en)/(index\.html|(films|programme|academy|media|venues|tickets|festival|archive)/index\.html|(films|programme|media|venues)/[a-z0-9]+(-[a-z0-9]+)*/index\.html)$'
 while IFS= read -r -d '' path; do
-  [[ $path =~ ^dist/(index\.html|(assets|images)/[A-Za-z0-9_-]+\.(css|js|woff|woff2|webp))$ ]] || fail "Unexpected dist file: $path"
+  [[ $path == dist/index.html || $path == dist/sitemap.xml ||
+     $path =~ ^dist/(assets|images)/[A-Za-z0-9_-]+\.(css|js|woff|woff2|webp)$ ||
+     $path =~ $route_file ]] || fail "Unexpected dist file: $path"
 done < <(find dist -type f -print0)
 
 curl_site() { curl --fail --silent --show-error --max-time 20 --proto '=https' "$1"; }
@@ -36,7 +42,7 @@ umask 077
 printf '%s\n' "$HOSTINGER_SSH_PRIVATE_KEY" > "$tmp/key"
 printf '%s\n' "$HOSTINGER_SSH_KNOWN_HOSTS" > "$tmp/known_hosts"
 remote_script=$(sed "s/'/'\\\\''/g" scripts/publish-hostinger.sh)
-tar -C dist -czf - index.html assets images |
+tar -C dist -czf - index.html assets images it de en sitemap.xml |
   ssh -T -p "$HOSTINGER_SSH_PORT" -i "$tmp/key" \
     -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
     -o "UserKnownHostsFile=$tmp/known_hosts" -o GlobalKnownHostsFile=/dev/null \
@@ -46,7 +52,7 @@ tar -C dist -czf - index.html assets images |
 # Compare each public file with the build, including the response at the site root.
 while IFS= read -r -d '' path; do
   url_path=${path#dist/}
-  [[ $url_path != index.html ]] || url_path=
+  url_path=${url_path%index.html}
   curl_site "$site/$url_path?verify=${GITHUB_RUN_ID:-local}" > "$tmp/served"
   cmp -s "$path" "$tmp/served" || fail "Published response differs from the build: /$url_path"
 done < <(find dist -type f -print0)
