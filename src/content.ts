@@ -31,7 +31,22 @@ export interface FestivalEdition extends RecordBase {
   starts?: string;
   ends?: string;
 }
+export interface EditorialImage {
+  src: string;
+  alt: LocalizedContent;
+  credit: string;
+  rights: "approved" | "pending";
+}
+export interface EditorialPreview {
+  src: string;
+  title: LocalizedContent;
+  credit: string;
+  rights: "approved" | "pending";
+  captions?: { src: string; locale: Locale; label: string };
+}
 export interface Person extends RecordBase {
+  edition?: number;
+  portrait?: EditorialImage;
   name: string;
   role?: LocalizedContent;
 }
@@ -46,6 +61,8 @@ export type FilmGenre =
   "experimental" | "classic" | "innovative" | "comedy" | "documentary";
 export interface Film extends RecordBase {
   verifiedGenres?: FilmGenre[];
+  discoveryPoster?: EditorialImage;
+  discoveryPreview?: EditorialPreview;
   title: string;
   directors?: string[];
   edition: number;
@@ -131,6 +148,7 @@ export interface ArchiveMedia extends RecordBase {
   kind:
     | "featured"
     | "gallery"
+    | "clips"
     | "aftermovie"
     | "interviews"
     | "screenings"
@@ -142,6 +160,7 @@ export interface ArchiveMedia extends RecordBase {
   caption: LocalizedContent;
   credit: string;
   rights: "pending" | "approved";
+  captions?: EditorialPreview["captions"];
   language?: Locale;
   filmIds?: string[];
 }

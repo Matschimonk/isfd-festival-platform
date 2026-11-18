@@ -1,8 +1,12 @@
-import { useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
   Aperture,
   Clapperboard,
+  Play,
+  Mic,
+  Moon,
+  Coffee,
   Headphones,
   MapPin,
   Sparkles,
@@ -10,6 +14,7 @@ import {
 } from "lucide-react";
 import {
   days,
+  l,
   visible,
   type ArchiveMedia,
   type Festival,
@@ -80,14 +85,88 @@ export function WeekOverview({ locale }: { locale: Locale }) {
   );
 }
 
-function FilmCard({ film, locale }: { film: Film; locale: Locale }) {
+const watchPreview = l(
+  "Watch preview",
+  "Guarda l’anteprima",
+  "Vorschau ansehen",
+);
+const closePreview = l(
+  "Close preview",
+  "Chiudi l’anteprima",
+  "Vorschau schließen",
+);
+
+export function FilmCard({ film, locale }: { film: Film; locale: Locale }) {
+  const id = useId();
+  const [playing, setPlaying] = useState(false);
+  const poster =
+    film.discoveryPoster?.rights === "approved"
+      ? film.discoveryPoster
+      : undefined;
+  const preview =
+    film.discoveryPreview?.rights === "approved"
+      ? film.discoveryPreview
+      : undefined;
   return (
-    <a className="editorial-film" href={link(locale, "films", film.id)}>
-      <Clapperboard size={19} aria-hidden="true" />
-      <strong>{film.title}</strong>
-      {film.directors?.length ? <span>{film.directors.join(", ")}</span> : null}
-      <ArrowUpRight size={17} aria-hidden="true" />
-    </a>
+    <article className="film-tile" data-frame={film.id.length % 4}>
+      <a className="film-card-link" href={link(locale, "films", film.id)}>
+        <div className="film-visual">
+          {poster ? (
+            <img src={poster.src} alt={poster.alt[locale]} loading="lazy" />
+          ) : (
+            <span className="film-geometry" aria-hidden="true">
+              <Clapperboard size={20} />
+            </span>
+          )}
+          <span className="film-year">{film.edition}</span>
+          <ArrowUpRight className="card-arrow" size={22} aria-hidden="true" />
+        </div>
+        <span className="film-name">
+          <strong>{film.title}</strong>
+          {film.directors?.length ? (
+            <small>{film.directors.join(", ")}</small>
+          ) : null}
+          {poster && <small>{poster.credit}</small>}
+        </span>
+      </a>
+      {preview && (
+        <div className="film-preview">
+          <button
+            type="button"
+            aria-expanded={playing}
+            aria-label={`${(playing ? closePreview : watchPreview)[locale]}: ${film.title}`}
+            aria-controls={id}
+            onClick={() => setPlaying(!playing)}
+          >
+            <Play size={16} aria-hidden="true" />
+            {(playing ? closePreview : watchPreview)[locale]}
+          </button>
+          <div id={id} hidden={!playing}>
+            {playing && (
+              <>
+                <video
+                  src={preview.src}
+                  controls
+                  playsInline
+                  preload="none"
+                  aria-label={preview.title[locale]}
+                >
+                  {preview.captions && (
+                    <track
+                      kind="captions"
+                      src={preview.captions.src}
+                      srcLang={preview.captions.locale}
+                      label={preview.captions.label}
+                    />
+                  )}
+                </video>
+                <small>{preview.credit}</small>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </article>
   );
 }
 
@@ -98,8 +177,8 @@ export function GenreExplorer({
 }: Props & { compact?: boolean }) {
   const [selected, setSelected] = useState<FilmGenre[]>([]);
   const films = data.films.filter(visible);
-  const featured = films.find(
-    (film) => film.id === "bellissima" && film.edition === 2026,
+  const featured = ["bellissima", "playing-god", "majoneze"].flatMap((id) =>
+    films.filter((film) => film.id === id && film.edition === 2026),
   );
   const matches = films.filter((film) =>
     film.verifiedGenres?.some((genre) => selected.includes(genre)),
@@ -146,10 +225,14 @@ export function GenreExplorer({
             <p>{x.genreEmpty[locale]}</p>
           )
         ) : (
-          featured && (
+          featured.length > 0 && (
             <div className="featured-film">
               <span className="eyebrow">{x.featured[locale]}</span>
-              <FilmCard film={featured} locale={locale} />
+              <div className="editorial-grid">
+                {featured.map((film) => (
+                  <FilmCard key={film.id} film={film} locale={locale} />
+                ))}
+              </div>
             </div>
           )
         )}
@@ -164,25 +247,29 @@ export function GenreExplorer({
 }
 
 export function SocialProgramme({ locale }: { locale: Locale }) {
+  const icons = [Aperture, Moon, Coffee];
   return (
     <EditorialSection title={x.social[locale]} id="social">
       <div className="editorial-grid">
-        {socialHighlights.map(({ id, day, title, description }, i) => (
-          <article className="story-card" key={id}>
-            <div className={"story-art story-art-" + i} aria-hidden="true">
-              <Aperture size={38} />
-            </div>
-            <div className="story-copy">
-              <p className="eyebrow">{days[day][locale]}</p>
-              <h3>{title[locale]}</h3>
-              <p>{description[locale]}</p>
-              <small>{x.proposed[locale]}</small>
-              <EditorialLink href={link(locale, "programme", id)}>
-                {pages.programme[locale]}
-              </EditorialLink>
-            </div>
-          </article>
-        ))}
+        {socialHighlights.map(({ id, day, title, description }, i) => {
+          const Icon = icons[i];
+          return (
+            <article className="story-card" key={id}>
+              <div className={"story-art story-art-" + i} aria-hidden="true">
+                <Icon size={45} />
+              </div>
+              <div className="story-copy">
+                <p className="eyebrow">{days[day][locale]}</p>
+                <h3>{title[locale]}</h3>
+                <p>{description[locale]}</p>
+                <small>{x.proposed[locale]}</small>
+                <EditorialLink href={link(locale, "programme", id)}>
+                  {pages.programme[locale]}
+                </EditorialLink>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </EditorialSection>
   );
@@ -222,17 +309,28 @@ export function TalksAndSchools({ data, locale }: Props) {
             <li key={topic.en}>{topic[locale]}</li>
           ))}
         </ul>
-        {episodes.length > 0 ? (
-          <ul>
-            {episodes.map((episode) => (
-              <Episode key={episode.id} episode={episode} locale={locale} />
-            ))}
-          </ul>
-        ) : (
-          <p>{x.podcastPending[locale]}</p>
-        )}
+        <div className="podcast-feature">
+          <div className="podcast-art" aria-hidden="true">
+            <Mic size={50} />
+          </div>
+          <div>
+            <h3>{x.talkTopics[3][locale]}</h3>
+            {episodes.length ? (
+              <ul>
+                {episodes.map((episode) => (
+                  <Episode key={episode.id} episode={episode} locale={locale} />
+                ))}
+              </ul>
+            ) : (
+              <p>{x.podcastPending[locale]}</p>
+            )}
+          </div>
+        </div>
       </EditorialSection>
       <EditorialSection title={x.young[locale]} id="young-eyes">
+        <div className="young-art" aria-hidden="true">
+          <Sparkles size={54} />
+        </div>
         <p className="eyebrow">{x.proposed[locale]}</p>
         <p>{x.youngIntro[locale]}</p>
         <ul className="editorial-topics">
@@ -252,16 +350,81 @@ export function TalksAndSchools({ data, locale }: Props) {
 export function Profile({
   person,
   locale,
+  href,
 }: {
-  person: Person;
+  person: Pick<Person, "name" | "role" | "portrait">;
   locale: Locale;
+  href?: string;
 }) {
+  const portrait =
+    person.portrait?.rights === "approved" ? person.portrait : undefined;
+  const initials = person.name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("");
   return (
     <article className="editorial-profile">
-      <Users size={19} aria-hidden="true" />
-      <strong>{person.name}</strong>
-      {person.role && <span>{person.role[locale]}</span>}
+      <div className="profile-art">
+        {portrait ? (
+          <img src={portrait.src} alt={portrait.alt[locale]} loading="lazy" />
+        ) : (
+          <span aria-hidden="true">{initials}</span>
+        )}
+      </div>
+      <div className="profile-copy">
+        <h3>
+          {href ? (
+            <EditorialLink href={href}>{person.name}</EditorialLink>
+          ) : (
+            person.name
+          )}
+        </h3>
+        {person.role && <span>{person.role[locale]}</span>}
+        {portrait && <small>{portrait.credit}</small>}
+      </div>
     </article>
+  );
+}
+
+export function PeopleStories({ data, locale }: Props) {
+  const highlights = data.awards.filter(
+    (award) =>
+      visible(award) &&
+      award.edition === 2026 &&
+      ["actor", "actress", "director"].includes(award.id),
+  );
+  const guests = data.people.filter(
+    (person) => visible(person) && person.edition === 2026,
+  );
+  return (
+    <EditorialSection
+      title={
+        l("People & Stories", "Persone e storie", "Menschen & Geschichten")[
+          locale
+        ]
+      }
+      id="people-stories"
+    >
+      <p className="eyebrow">{x.featured[locale]}</p>
+      <div className="editorial-grid profile-grid">
+        {highlights.map((award) => (
+          <Profile
+            key={award.id}
+            person={{ name: award.recipient, role: award.title }}
+            locale={locale}
+            href={link(locale, "archive") + "#archive-awards"}
+          />
+        ))}
+        {guests.map((person) => (
+          <Profile key={person.id} person={person} locale={locale} />
+        ))}
+      </div>
+      <EditorialLink href={link(locale, "media")}>
+        {pages.media[locale]}
+      </EditorialLink>
+    </EditorialSection>
   );
 }
 
@@ -287,7 +450,16 @@ function ArchiveAsset({
           controls
           preload="none"
           aria-label={asset.caption[locale]}
-        />
+        >
+          {asset.captions && (
+            <track
+              kind="captions"
+              src={asset.captions.src}
+              srcLang={asset.captions.locale}
+              label={asset.captions.label}
+            />
+          )}
+        </video>
       ) : (
         <EditorialLink href={asset.url}>{asset.caption[locale]}</EditorialLink>
       )}
@@ -312,6 +484,18 @@ export function ArchiveFeature({ data, locale }: Props) {
     (asset) =>
       visible(asset) && asset.year === 2026 && asset.rights === "approved",
   );
+  const highlights = [
+    { kind: "screenings", href: "#archive-screenings", Icon: Clapperboard },
+    { kind: "awards", href: "#archive-awards", Icon: Sparkles },
+    { kind: "press", href: "#archive-press", Icon: Headphones },
+  ] as const;
+  const missing = (
+    Object.keys(x.archiveKinds) as ArchiveMedia["kind"][]
+  ).filter(
+    (kind) =>
+      !highlights.some((item) => item.kind === kind) &&
+      !assets.some((asset) => asset.kind === kind),
+  );
   return (
     <>
       <div className="retrospective-intro">
@@ -321,42 +505,46 @@ export function ArchiveFeature({ data, locale }: Props) {
         <p>{x.archiveIntro[locale]}</p>
       </div>
       <EditorialSection title={x.archiveMedia[locale]} id="visual-archive">
-        {assets.length === 0 && <p>{x.archivePending[locale]}</p>}
-        <div className="editorial-grid archive-slots">
-          {(Object.keys(x.archiveKinds) as ArchiveMedia["kind"][]).map(
-            (kind) => {
-              const items = assets.filter((asset) => asset.kind === kind);
-              const quickLink =
-                kind === "screenings"
-                  ? "#archive-screenings"
-                  : kind === "awards"
-                    ? "#archive-awards"
-                    : kind === "press"
-                      ? "#archive-press"
-                      : undefined;
-              return (
-                <article className="panel" key={kind}>
-                  <h3>{x.archiveKinds[kind][locale]}</h3>
-                  {items.map((asset) => (
-                    <ArchiveAsset
-                      key={asset.id}
-                      asset={asset}
-                      data={data}
-                      locale={locale}
-                    />
-                  ))}
-                  {quickLink ? (
-                    <EditorialLink href={quickLink}>
-                      {x.archiveKinds[kind][locale]}
-                    </EditorialLink>
-                  ) : (
-                    items.length === 0 && <small>{ui.dates[locale]}</small>
-                  )}
-                </article>
-              );
-            },
-          )}
+        <div className="editorial-grid archive-links">
+          {highlights.map(({ kind, href, Icon }) => (
+            <a key={kind} href={href} className="archive-chapter">
+              <Icon size={28} aria-hidden="true" />
+              <strong>{x.archiveKinds[kind][locale]}</strong>
+              <ArrowUpRight size={18} aria-hidden="true" />
+            </a>
+          ))}
         </div>
+        {assets.length > 0 && (
+          <div className="editorial-grid archive-assets">
+            {assets.map((asset) => (
+              <ArchiveAsset
+                key={asset.id}
+                asset={asset}
+                data={data}
+                locale={locale}
+              />
+            ))}
+          </div>
+        )}
+        {missing.length > 0 && (
+          <details className="archive-pending">
+            <summary>
+              {
+                l(
+                  "Media availability",
+                  "Disponibilità dei contenuti",
+                  "Verfügbarkeit der Medien",
+                )[locale]
+              }
+            </summary>
+            {assets.length === 0 && <p>{x.archivePending[locale]}</p>}
+            <ul>
+              {missing.map((kind) => (
+                <li key={kind}>{x.archiveKinds[kind][locale]}</li>
+              ))}
+            </ul>
+          </details>
+        )}
       </EditorialSection>
     </>
   );
@@ -366,27 +554,23 @@ export function HomeFeatures({ data, locale }: Props) {
   const cards = [
     {
       title: x.talks,
-      text: x.talkIntro,
       href: link(locale, "academy") + "#talks",
       Icon: Headphones,
       proposed: true,
     },
     {
       title: x.young,
-      text: x.youngIntro,
       href: link(locale, "academy") + "#young-eyes",
       Icon: Sparkles,
       proposed: true,
     },
     {
       title: x.map,
-      text: x.mapIntro,
       href: link(locale, "venues") + "#festival-map",
       Icon: MapPin,
     },
     {
       title: x.guests,
-      text: x.guestPending,
       href: link(locale, "festival") + "#guests",
       Icon: Users,
     },
@@ -394,18 +578,21 @@ export function HomeFeatures({ data, locale }: Props) {
   return (
     <>
       <WeekOverview locale={locale} />
+      <GenreExplorer data={data} locale={locale} compact />
       <div className="editorial-grid home-features">
-        {cards.map(({ title, text, href, Icon, proposed }) => (
-          <article className="feature-card" key={href}>
-            <Icon size={23} aria-hidden="true" />
-            <h2>{title[locale]}</h2>
-            {proposed && <small>{x.proposed[locale]}</small>}
-            <p>{text[locale]}</p>
-            <EditorialLink href={href}>{title[locale]}</EditorialLink>
-          </article>
+        {cards.map(({ title, href, Icon, proposed }) => (
+          <a className="feature-card" href={href} key={href}>
+            <span className="feature-art" aria-hidden="true">
+              <Icon size={40} />
+            </span>
+            <span className="feature-text">
+              <strong>{title[locale]}</strong>
+              {proposed && <small>{x.proposed[locale]}</small>}
+            </span>
+            <ArrowUpRight size={20} aria-hidden="true" />
+          </a>
         ))}
       </div>
-      <GenreExplorer data={data} locale={locale} compact />
       <SocialProgramme locale={locale} />
       <section className="archive-promo">
         <div className="archive-frame" aria-hidden="true">

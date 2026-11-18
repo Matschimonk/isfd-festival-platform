@@ -20,6 +20,10 @@ npm run preview
 
 The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
+## Festival Experience V2
+
+The chapter navigation keeps Tickets visible and groups editorial pages around the programme. The film, people and archive components accept rights-approved media with credits. The [V2 review](docs/experience-v2-review.md) includes matched screenshots and the remaining media brief.
+
 ## Festival Experience V1
 
 The homepage leads into the seven-day overview, genre explorer, timeline, Academy, festival map preview and 2026 retrospective. Day and night filters keep programme entries visible when they have no assigned period. The genre explorer only uses `Film.verifiedGenres`; the archive currently has no approved discovery tags. The archive gallery renders only published 2026 records with approved rights. The current repository has no approved retrospective photos or videos, so the public section displays localized empty states and links to verified coverage, screenings and awards.
@@ -34,6 +38,10 @@ The homepage leads into the seven-day overview, genre explorer, timeline, Academ
 
 - The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [Italian screening programme](https://www.italyshortfilmdays.com/it/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. Screening times are listed at programme-block level.
 - The [pre-merge review](docs/pre-merge-review.md) records the resolved 2026 credits, outstanding editorial questions and production release checks. Remaining 2027 work includes confirming exact dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers.
+
+## Canonical site origin
+
+Set `VITE_SITE_ORIGIN` at build time to a bare HTTPS origin. The default is the current festival sandbox. Vite uses the same public value for both the browser bundle and the prerender command, so canonicals, alternate links, sharing metadata, JSON-LD and the sitemap use the same origin. Navigation and asset URLs remain relative to the site root. A local migration test can use `VITE_SITE_ORIGIN=https://www.italyshortfilmdays.com npm run build`. The deployed domain and production workflow are managed separately.
 
 ## Static routes and SEO
 
