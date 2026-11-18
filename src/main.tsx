@@ -6,9 +6,11 @@ import { repository } from "./archive";
 import { defaultLocale, isLocale } from "./content";
 import { ui } from "./copy";
 import { legacyRoute, link, pathRoute, resolvePage } from "./routes";
-import { pageMetadata } from "./seo";
+import { indexPolicy, pageMetadata } from "./seo";
 import "./style.css";
 import "./experience-v2.css";
+import "./director-preview.css";
+import "./programme-timetable.css";
 
 function savedLocale() {
   try {
@@ -66,7 +68,7 @@ async function start() {
     document.title = pageMetadata(data, route, locale).title;
     document
       .querySelector('meta[name="robots"]')
-      ?.setAttribute("content", missing ? "noindex" : "index,follow");
+      ?.setAttribute("content", missing ? "noindex" : indexPolicy);
     createRoot(root).render(element);
   }
 }

@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import {
   categories,
   days,
+  isConfirmedEvent,
   localizedEditorialText,
   translate,
   visible,
@@ -15,7 +16,17 @@ import {
   type Screening,
 } from "./content";
 import { mediaKinds, pages, ui } from "./copy";
+import {
+  ApprovedExcerpts,
+  ContactPreview,
+  NewsletterPreview,
+  PartnersPreview,
+  PreviewMark,
+  TicketsPreview,
+  Trailer,
+} from "./DirectorPreview";
 import { Brand, Header } from "./Navigation";
+import { ProgrammeTimetable, SaveEvent } from "./ProgrammeTimetable";
 import {
   ArchiveFeature,
   FilmCard,
@@ -23,10 +34,9 @@ import {
   GenreExplorer,
   HomeFeatures,
   Profile,
-  SocialProgramme,
   TalksAndSchools,
 } from "./Experience";
-import { experience, festivalWeek } from "./experience-content";
+import { experience } from "./experience-content";
 
 import { link, resolvePage, type Page, type Route } from "./routes";
 
@@ -132,131 +142,6 @@ function ScreeningList({
     </div>
   );
 }
-function Programme({
-  data,
-  locale,
-  t,
-}: {
-  data: Festival;
-  locale: Locale;
-  t: T;
-}) {
-  const [day, setDay] = useState<number | "all">("all");
-  const [category, setCategory] = useState<Category | "all">("all");
-  const [period, setPeriod] = useState<"both" | "day" | "night">("both");
-  const selected = data.events.filter(
-    (event) =>
-      visible(event) &&
-      event.edition === 2027 &&
-      (day === "all" || day === event.day) &&
-      (category === "all" || category === event.category) &&
-      (period === "both" || !event.period || period === event.period),
-  );
-  return (
-    <>
-      <p>{t(ui.outline)}</p>
-      <div className="filters">
-        <label>
-          {t(ui.day)}
-          <select
-            aria-label={t(ui.day)}
-            value={day}
-            onChange={(e) =>
-              setDay(e.target.value === "all" ? "all" : Number(e.target.value))
-            }
-          >
-            <option value="all">{t(ui.allDays)}</option>
-            {days.map((value, i) => (
-              <option key={i} value={i}>
-                {t(value)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {t(ui.category)}
-          <select
-            aria-label={t(ui.category)}
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category | "all")}
-          >
-            <option value="all">{t(ui.allCategories)}</option>
-            {Object.entries(categories).map(([key, value]) => (
-              <option key={key} value={key}>
-                {t(value)}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div
-        className="period-switch editorial-filters"
-        role="group"
-        aria-label={t(experience.rhythm)}
-      >
-        {(["both", "day", "night"] as const).map((option) => (
-          <button
-            key={option}
-            type="button"
-            aria-pressed={period === option}
-            onClick={() => setPeriod(option)}
-          >
-            {t(experience[option])}
-          </button>
-        ))}
-      </div>
-      <p className="timeline-help">{t(experience.rhythmHelp)}</p>
-      <div
-        className="schedule editorial-timeline"
-        data-period={period}
-        aria-live="polite"
-      >
-        {selected.length === 0 && <p>{t(ui.empty)}</p>}
-        {days.map((value, i) => {
-          const items = selected.filter((event) => event.day === i);
-          return (
-            items.length > 0 && (
-              <section className="schedule-day" key={i} id={`day-${i}`}>
-                <div>
-                  <div className="eyebrow">{t(value)}</div>
-                  <h2>{t(festivalWeek[i].title)}</h2>
-                  <p>{t(festivalWeek[i].line)}</p>
-                </div>
-                <ul>
-                  {items.map((event) => (
-                    <li key={event.id}>
-                      <a
-                        className="schedule-link"
-                        href={link(locale, "programme", event.id)}
-                      >
-                        <span>
-                          {t(event.title)}
-                          <small>
-                            {t(categories[event.category])}
-                            {event.period &&
-                              " · " +
-                                t(
-                                  ui[
-                                    event.period === "day" ? "daytime" : "night"
-                                  ],
-                                )}
-                            {" · " + (event.time ?? t(experience.unscheduled))}
-                          </small>
-                        </span>
-                        <ArrowRight size={17} aria-hidden="true" />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )
-          );
-        })}
-      </div>
-      <SocialProgramme locale={locale} />
-    </>
-  );
-}
 function EventDetails({
   event,
   data,
@@ -286,8 +171,11 @@ function EventDetails({
           .filter(Boolean)
           .join(" · ") || t(ui.outline)}
       </p>
-      {event.edition === 2027 && (
+      {event.edition === 2027 && !isConfirmedEvent(event) && (
         <p className="eyebrow">{t(experience.proposed)}</p>
+      )}
+      {event.edition === 2027 && (
+        <SaveEvent event={event} locale={locale} showText />
       )}
       {event.description && <p>{t(event.description)}</p>}
       {venue && (
@@ -469,8 +357,14 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
   const [first, second] = t(ui.headline).split(/(?<=\.)\s+/);
   return (
     <>
-      <section className="hero experience-hero">
+      <section className="hero experience-hero v3-hero">
+        <div className="v3-key-visual" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </div>
         <div className="shell hero-inner">
+          <PreviewMark locale={locale} />
           <div className="eyebrow">
             <span />
             {t(ui.date)}
@@ -492,6 +386,8 @@ function Home({ data, locale, t }: { data: Festival; locale: Locale; t: T }) {
         </div>
       </section>
       <div className="shell page-body">
+        <Trailer locale={locale} />
+        <ApprovedExcerpts data={data} locale={locale} />
         <HomeFeatures data={data} locale={locale} />
         <section aria-labelledby="home-media">
           <h2 id="home-media">{t(pages.media)}</h2>
@@ -566,7 +462,7 @@ export function App({
   else
     switch (page) {
       case "programme":
-        body = <Programme data={data} locale={locale} t={t} />;
+        body = <ProgrammeTimetable data={data} locale={locale} />;
         break;
       case "films":
         body = (
@@ -657,27 +553,18 @@ export function App({
           </>
         );
         break;
-      case "tickets": {
-        const offers = data.tickets.filter(
-          (o) => visible(o) && o.edition === 2027,
-        );
-        body = (
-          <>
-            {offers.length === 0 ? (
-              <Panel title={t(ui.coming)}>
-                <p>{t(ui.sale)}</p>
-              </Panel>
-            ) : (
-              offers.map((o) => (
-                <Panel key={o.id} title={t(o.label)}>
-                  {o.url && <External href={o.url}>{t(ui.ticket)}</External>}
-                </Panel>
-              ))
-            )}
-          </>
-        );
+      case "tickets":
+        body = <TicketsPreview locale={locale} />;
         break;
-      }
+      case "partners":
+        body = <PartnersPreview locale={locale} />;
+        break;
+      case "contact":
+        body = <ContactPreview locale={locale} />;
+        break;
+      case "newsletter":
+        body = <NewsletterPreview locale={locale} />;
+        break;
       case "festival":
         body = (
           <>
@@ -725,6 +612,8 @@ export function App({
         );
         body = (
           <>
+            <Trailer locale={locale} />
+            <ApprovedExcerpts data={data} locale={locale} edition={2026} />
             <ArchiveFeature data={data} locale={locale} />
             {edition && (
               <div className="eyebrow" id="2026">
@@ -800,6 +689,7 @@ export function App({
                 ← {t(pages[page])}
               </a>
             )}
+            <PreviewMark locale={locale} />
             <h1>{title}</h1>
             {body}
           </div>

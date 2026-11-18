@@ -14,6 +14,13 @@ export const pages = {
   tickets: l("Tickets", "Biglietti", "Tickets"),
   festival: l("Festival", "Festival", "Festival"),
   archive: l("Archive", "Archivio", "Archiv"),
+  partners: l(
+    "Partners & Sponsors",
+    "Partner e sponsor",
+    "Partner & Sponsoren",
+  ),
+  contact: l("Contact", "Contatti", "Kontakt"),
+  newsletter: l("Newsletter", "Newsletter", "Newsletter"),
 };
 export const ui = {
   date: l("JUNE 2027 — BERLIN", "GIUGNO 2027 — BERLINO", "JUNI 2027 — BERLIN"),

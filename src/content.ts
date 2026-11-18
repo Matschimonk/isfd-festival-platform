@@ -111,7 +111,10 @@ export interface FestivalEvent extends RecordBase {
   filmIds?: string[];
   registration?: string;
   period?: "day" | "night";
+  confirmation?: "concept" | "confirmed";
 }
+export const isConfirmedEvent = (event: FestivalEvent) =>
+  event.confirmation === "confirmed" && Boolean(event.source);
 export interface Workshop extends FestivalEvent {
   facilitator?: string;
 }
@@ -224,6 +227,7 @@ const event = (
   category,
   title: l(en, it, de),
   period,
+  confirmation: "concept",
   edition: 2027,
   status: "published",
 });

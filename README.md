@@ -20,6 +20,10 @@ npm run preview
 
 The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
+## Director’s Preview V3
+
+The [Director’s Presentation](docs/director-preview.md) includes the walkthrough, page inventory, screenshots, demo boundaries and launch estimate. The optional Studio Lite runs on loopback through `npm run studio:v3`.
+
 ## Festival Experience V2
 
 The chapter navigation keeps Tickets visible and groups editorial pages around the programme. The film, people and archive components accept rights-approved media with credits. The [V2 review](docs/experience-v2-review.md) includes matched screenshots and the remaining media brief.
@@ -38,6 +42,8 @@ The homepage leads into the seven-day overview, genre explorer, timeline, Academ
 
 - The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [Italian screening programme](https://www.italyshortfilmdays.com/it/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. Screening times are listed at programme-block level.
 - The [pre-merge review](docs/pre-merge-review.md) records the resolved 2026 credits, outstanding editorial questions and production release checks. Remaining 2027 work includes confirming exact dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers.
+
+For the Director’s rehearsal, see the [private browser preview instructions](docs/presentation-preview.md) and [presentation deck](docs/isfd-director-presentation.pdf). Timetable records remain concepts unless an editor sets `confirmation: "confirmed"` and supplies a source. Venue filters additionally require a published, sourced venue from the same edition. Genre filters require a linked, same-edition published film with reviewed `verifiedGenres`. Keep tentative times blank until they can be labelled appropriately. My Festival stores only event IDs in the visitor’s browser.
 
 ## Canonical site origin
 
