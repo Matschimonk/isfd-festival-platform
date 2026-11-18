@@ -61,6 +61,7 @@ export const ui = {
   lineup: l("2026 Film Selection", "Selezione film 2026", "Filmauswahl 2026"),
   archive: l("2026 Archive", "Archivio 2026", "Archiv 2026"),
   read: l("Read the original", "Leggi l’originale", "Originalbeitrag lesen"),
+  articleDetails: l("Article details", "Dettagli dell’articolo", "Zum Beitrag"),
   register: l("Register", "Iscriviti", "Anmelden"),
   director: l("Direction", "Regia", "Regie"),
   unknown: l(

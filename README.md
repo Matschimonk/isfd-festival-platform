@@ -18,7 +18,7 @@ npm run build
 npm run preview
 ```
 
-The build checks TypeScript and writes static assets to `dist/`. Preview serves that directory locally.
+The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
 ## WordPress integration
 
@@ -28,7 +28,12 @@ The build checks TypeScript and writes static assets to `dist/`. Preview serves 
 
 - The [official 2026 retrospective](https://www.italyshortfilmdays.com/en/experience), [official selection](https://www.italyshortfilmdays.com/en/line), [official programme](https://www.italyshortfilmdays.com/en/program) and [TaxiDrivers programme](https://www.taxidrivers.it/533140/italy-short-film-days/italy-short-film-days-berlin-screening-programm.html) support the historical edition. The published sources disagree on the directing credit for Juggernaut, so that credit is omitted pending confirmation. Screening times are listed at programme-block level.
 - Remaining editorial work includes confirming 2027 dates, venues and accessibility, credits for team and jury, partners, selection, media, registration links and ticket offers. Some 2026 films still need verified production metadata, translated synopses and rights-cleared artwork or trailers.
-- Build generates `seo/sitemap.xml` alongside `dist/`. The current Hostinger deployment allowlist accepts the existing layout only, so the sitemap is an unshipped artifact. Publish it separately to the verified festival root when authorised. Detail URLs use query parameters and React updates their translated metadata after load. Crawlers that skip JavaScript receive the generic homepage social preview.
+
+## Static routes and SEO
+
+- The published URLs start with `/it/`, `/de/`, or `/en/`. Details use paths such as `/de/films/bellissima/` and `/it/programme/thu-night/`. Keep the trailing slash when sharing links. Each URL is backed by its own `index.html`, and the browser hydrates that page to enable navigation controls and filters.
+- The root serves the English homepage in static HTML and declares `/en/` as canonical. Previously shared query links such as `/?page=films&id=bellissima&lang=de` redirect in the browser, with the topic, language, fragment and other parameters preserved. Crawlers without JavaScript should use the canonical paths. A first visit to the root in a browser uses the saved preference when available.
+- The sitemap lives at `/sitemap.xml` after publishing and lists canonical URLs with reciprocal language alternates. Published 2027 programme previews have descriptive metadata. Structured event data is limited to the sourced 2026 archive and its screening blocks, whose schema uses dates at block level. Social previews use the existing generic festival artwork, while film and editorial pages have their own titles and descriptions.
 
 ## Production deployment to Hostinger
 
@@ -69,4 +74,4 @@ After verifying the above and merging the workflow, open **Settings → Secrets 
 
 ### Published files and verification
 
-Vite uses the root base path `/`. The deployment uploads the build's `index.html`, `assets/`, and `images/`, with `index.html` installed last. The target directories should be dedicated to festival build assets. There is no directory synchronisation or cleanup of older assets. Source, dependencies, and Git metadata are excluded from the build upload. The workflow compares the HTTPS response at `/` and each published asset with the build to detect a stale cache, missing files, or a wrong directory index. If that check fails, inspect the festival's directory index and cache settings and rerun from `main` once corrected. The deploy does not change DNS or the parent site.
+Vite uses the root base path `/`. The deployment uploads the build’s assets, images, language-prefixed HTML, `sitemap.xml`, and root `index.html`. It installs the root page last. The `it/`, `de/`, and `en/` directories should be dedicated to festival pages. Hostinger must serve each directory’s `index.html` for its trailing-slash URL. No rewrite rules are required. The uploader keeps previously published files. Removing a route from the source removes it from the new build and sitemap, while its old file requires separate removal from Hostinger. Source, dependencies, and Git metadata are excluded from the build upload. The workflow compares the HTTPS response at `/`, each language route, the sitemap, and each published asset with the build to detect a stale cache, missing files, or a wrong directory index. If that check fails, inspect the festival's directory index and cache settings and rerun from `main` once corrected. The deploy does not change DNS or the parent site.
