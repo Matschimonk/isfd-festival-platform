@@ -514,3 +514,79 @@ main .editorial-timeline .schedule-day {
     transform: none;
   }
 }
+
+/* Media inherits the existing V2 frames and typography. */
+.media-figure {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #44322c;
+  background: #1a1513;
+}
+.media-figure video,
+.media-figure audio {
+  width: 100%;
+}
+.media-figure figcaption {
+  padding-top: 10px;
+}
+.media-credit {
+  display: block;
+  color: var(--muted);
+  padding: 4px 0;
+}
+.film-tile > .media-credit {
+  padding-inline: 14px;
+}
+.media-credit a {
+  text-decoration: underline;
+}
+.media-image-view a {
+  display: block;
+  position: relative;
+}
+.media-image-view img {
+  width: 100%;
+  height: auto;
+}
+.media-image-view svg {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: #171211;
+  padding: 6px;
+  box-sizing: content-box;
+}
+.media-lightbox {
+  width: min(96vw, 1400px);
+  max-height: 96dvh;
+  padding: 20px;
+  color: var(--experience-paper);
+  background: #171211;
+  border: 1px solid #44322c;
+  overflow: auto;
+}
+.media-lightbox::backdrop {
+  background: #0a0807ef;
+}
+.media-lightbox img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 74dvh;
+  object-fit: contain;
+  margin: auto;
+}
+.media-lightbox .close {
+  position: sticky;
+  top: 0;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  z-index: 1;
+}
+.media-transcript p {
+  white-space: pre-wrap;
+}

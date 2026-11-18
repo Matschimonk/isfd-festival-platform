@@ -15,6 +15,8 @@ import {
   type Screening,
 } from "./content";
 import { mediaKinds, pages, ui } from "./copy";
+import { media, relatedMedia } from "./media-library";
+import { MediaGallery, mediaCopy } from "./Media";
 import { Brand, Header } from "./Navigation";
 import {
   ArchiveFeature,
@@ -273,6 +275,9 @@ function EventDetails({
     (p) => event.participants?.includes(p.id) && visible(p),
   );
   const films = data.films.filter((f) => event.filmIds?.includes(f.id));
+  const recordings = media.filter((asset) =>
+    asset.related.events?.includes(event.id),
+  );
   return (
     <>
       <div className="eyebrow">
@@ -303,6 +308,12 @@ function EventDetails({
         </p>
       )}
       {films.length > 0 && <FilmList films={films} locale={locale} />}
+      {recordings.length > 0 && (
+        <section>
+          <h2>{mediaCopy.recordings[locale]}</h2>
+          <MediaGallery assets={recordings} locale={locale} data={data} />
+        </section>
+      )}
       {event.registration && (
         <External href={event.registration}>{t(ui.ticket)}</External>
       )}
@@ -321,6 +332,9 @@ function FilmDetails({
   t: T;
 }) {
   const synopsis = localizedEditorialText(film.synopsis, locale);
+  const assets = (["poster", "still", "preview"] as const).flatMap((role) =>
+    relatedMedia(role, "films", film.id),
+  );
   const rows = [
     [ui.director, film.directors?.join(", ")],
     [ui.year, film.year],
@@ -338,7 +352,6 @@ function FilmDetails({
   return (
     <>
       <div className="eyebrow">{film.edition}</div>
-      {film.poster && <img className="detail-image" src={film.poster} alt="" />}
       <dl className="metadata">
         {rows
           .filter(([, value]) => value)
@@ -354,19 +367,11 @@ function FilmDetails({
       ) : (
         <p>{t(film.synopsis ? ui.translationPending : ui.unknown)}</p>
       )}
-      {film.stills?.map((src) => (
-        <img
-          className="detail-image"
-          key={src}
-          src={src}
-          alt=""
-          loading="lazy"
-        />
-      ))}
-      {film.trailer && (
-        <p>
-          <External href={film.trailer}>{t(ui.trailer)}</External>
-        </p>
+      {assets.length > 0 && (
+        <section>
+          <h2>{mediaCopy.film[locale]}</h2>
+          <MediaGallery assets={assets} locale={locale} />
+        </section>
       )}
       {screenings.length > 0 && (
         <section>
@@ -421,6 +426,13 @@ function Media({
   const podcasts = data.podcasts.filter(
     (p) => visible(p) && (kind === "all" || kind === "podcast"),
   );
+  const recordings = featured
+    ? []
+    : media.filter(
+        (asset) =>
+          (asset.role === "podcast" || asset.role === "interview") &&
+          (kind === "all" || kind === asset.role),
+      );
   return (
     <>
       {!featured && (
@@ -461,7 +473,12 @@ function Media({
           </Panel>
         ))}
       </div>
-      {articles.length + podcasts.length === 0 && <p>{t(ui.coming)}</p>}
+      {recordings.length > 0 && (
+        <MediaGallery assets={recordings} locale={locale} data={data} />
+      )}
+      {articles.length + podcasts.length + recordings.length === 0 && (
+        <p>{t(ui.coming)}</p>
+      )}
     </>
   );
 }
@@ -625,6 +642,11 @@ export function App({
             {data.workshops.filter(visible).map((w) => (
               <Panel key={w.id} title={t(w.title)}>
                 {w.description && <p>{t(w.description)}</p>}
+                <MediaGallery
+                  assets={relatedMedia("workshop", "events", w.id)}
+                  locale={locale}
+                  data={data}
+                />
                 {w.registration && (
                   <External href={w.registration}>{t(ui.register)}</External>
                 )}

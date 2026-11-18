@@ -20,6 +20,10 @@ npm run preview
 
 The build checks TypeScript, compiles the browser bundle, and runs a Node-only Vite renderer with React 19 to write complete pages and `sitemap.xml` to `dist/`. The renderer is built into the local `.prerender/` directory. Preview serves the production files locally.
 
+## Content and media
+
+Editors work in `content/media.json`. The [media intake guide](docs/media-intake.md) covers rights, translations, asset delivery, validation and archive review screenshots. The [record templates](docs/media-intake-template.json) stay outside the active manifest.
+
 ## Festival Experience V2
 
 The chapter navigation keeps Tickets visible and groups editorial pages around the programme. The film, people and archive components accept rights-approved media with credits. The [V2 review](docs/experience-v2-review.md) includes matched screenshots and the remaining media brief.
